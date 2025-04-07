@@ -1,0 +1,195 @@
+/* FAQ.css */
+.faq-block {
+    background-color: #025178;
+}
+.faq-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #025178; /* Основной цвет фона */
+    color: white; /* Белый цвет текста */
+    border-radius: 8px;
+}
+
+h2 {
+    text-align: center;
+    padding: 30px;
+    color: white; /* Белый цвет заголовка */
+    margin: 0;
+}
+
+.faq-item {
+    margin-bottom: 15px;
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.1); /* Полупрозрачный белый фон для элементов */
+}
+
+.faq-question {
+    font-size: 20px;
+    padding: 15px 20px;
+    background-color: #025178; /* Яркий бирюзовый для вопросов */
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s;
+    color: white; /* Белый текст вопросов */
+}
+
+.faq-question:hover {
+    background-color: #0393A7; /* Темнее при наведении */
+}
+
+.faq-answer {
+    padding: 0 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.05); /* Очень легкий фон для ответов */
+}
+
+.faq-answer.open {
+    max-height: 1000px;
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: white; /* Белый текст ответов */
+}
+
+.faq-icon {
+    font-size: 20px;
+    transition: transform 0.3s;
+    color: white;
+}
+
+.faq-icon.open {
+    transform: rotate(180deg);
+}
+
+/* Стили для содержимого ответов */
+.faq-answer p,
+.faq-answer li,
+.faq-answer div,
+.faq-answer h4,
+.faq-answer h5 {
+    color: white; /* Белый цвет для всего текста в ответах */
+}
+
+.faq-answer a {
+    color: #B3E5FC; /* Светло-голубой для ссылок */
+    text-decoration: underline;
+}
+
+.faq-answer-list {
+    margin: 0;
+    padding-left: 20px;
+    line-height: 1.5;
+}
+
+.faq-answer-list li {
+    margin-bottom: 10px;
+}
+
+.faq-indented-list {
+    margin: 10px 0;
+    padding-left: 30px;
+}
+
+.faq-nested-list {
+    margin: 5px 0;
+    padding-left: 20px;
+    list-style-type: '- ';
+}
+
+.faq-highlight {
+    font-weight: bold;
+    color: #B3E5FC; /* Светло-голубой для выделенного текста */
+}
+
+.faq-price-section {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.faq-price-title,
+.faq-section-title,
+.faq-method-title {
+    color: #B3E5FC; /* Светло-голубой для подзаголовков */
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.faq-price-list,
+.faq-factor-list,
+.faq-method-list,
+.faq-responsibility-list,
+.faq-who-list,
+.faq-calculate-list {
+    margin: 8px 0;
+    padding-left: 25px;
+}
+
+.faq-price-options {
+    display: flex;
+    gap: 20px;
+    margin: 15px 0;
+}
+
+.faq-option {
+    flex: 1;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+.faq-option h5 {
+    margin: 0 0 8px 0;
+    color: #B3E5FC;
+}
+
+.faq-legal-requirement {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.faq-legal-reference {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-left: 3px solid #B3E5FC;
+    margin-top: 10px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.faq-equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.faq-equipment-item {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 8px 12px;
+    border-radius: 5px;
+    border-left: 3px solid #B3E5FC;
+}
+
+.faq-purpose-badge {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid #B3E5FC;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
