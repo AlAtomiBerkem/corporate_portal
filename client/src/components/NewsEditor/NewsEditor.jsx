@@ -12,6 +12,7 @@ export default function NewsEditor({ onAdd }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (isLoading) return;
         setError(null);
         setIsLoading(true);
 

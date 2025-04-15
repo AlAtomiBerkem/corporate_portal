@@ -46,7 +46,7 @@ exports.login = async (req, res) => {
         const token = jwt.sign(
             { id: admin._id },
             config.JWT_SECRET,
-            { expiresIn: '40h' } // 4 часа - оптимальное время
+            { expiresIn: '4h' } // 4 часа - оптимальное время
         );
 
         res.json({
@@ -62,20 +62,21 @@ exports.login = async (req, res) => {
 };
 // Проверка авторизации (middleware)
 exports.verifyToken = (req, res, next) => {
-    const token = req.headers['authorization'];
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // Берём часть после "Bearer"
 
     if (!token) {
         return res.status(403).json({ message: 'Требуется авторизация' });
     }
 
-    jwt.verify(token, config.JWT_SECRET, { algorithms: ['HS256'] }, (err, decoded) => {
+    jwt.verify(token, config.JWT_SECRET, (err, decoded) => {
         if (err) {
+            console.error('JWT Error:', err); // Логируем ошибку
             return res.status(401).json({
                 message: 'Недействительный токен',
-                error: err.message
+                error: err.message // Добавляем детали ошибки
             });
         }
-
         req.userId = decoded.id;
         next();
     });

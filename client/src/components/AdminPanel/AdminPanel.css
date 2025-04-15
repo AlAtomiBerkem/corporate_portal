@@ -152,3 +152,41 @@
         padding: 1rem;
     }
 }
+
+.document-card-adm {
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.documents-list-adm {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+    background-color: white;
+}
+
+.download-btn-adm {
+    background-color: #4a76a8;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.download-btn-adm:hover {
+    background-color: #3a5f8a;
+}
+
+@media (max-width: 768px) {
+    .document-card-adm {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}
