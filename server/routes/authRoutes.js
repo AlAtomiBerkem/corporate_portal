@@ -1,8 +1,8 @@
 const router = require("express").Router();
-const controller = require("../controllers/authController");
+const adminController = require("../controllers/authController");
+const { checkAuth, checkAdmin } = require('../middleware/auth');
 
-router.post("/login", controller.login);
-router.post("/register", controller.register);
-router.get("/news", controller.news);
+router.get('/dashboard', checkAuth, checkAdmin, adminController.getDashboard)
+router.post('/ban-user', checkAuth, checkAdmin, adminController.banUser);
 
 module.exports = router;
