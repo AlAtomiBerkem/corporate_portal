@@ -1,45 +1,16 @@
 const mongoose = require('mongoose');
 
-const DocumentSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true,
-    },
-    description: {
-        type: String,
-        required: true,
-    },
-    filePath: {
-        type: String,
-        required: true,
-    },
-    fileName: {
-        type: String,
-        required: true,
-    },
-    fileType: {
-        type: String,
-        required: true,
-    },
-    uploadedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Admin',
-        required: true,
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-        required: true,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
+const documentSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    filename: { type: String, required: true },
+    path: { type: String, required: true },
+    size: Number,
+    mimetype: String,
+    createdAt: { type: Date, default: Date.now }
 });
-
-DocumentSchema.pre('save', function(next) {
+documentSchema.pre('save', function(next) {
     this.updatedAt = Date.now();
     next();
 });
 
-module.exports = mongoose.model('Document', DocumentSchema);
+module.exports = mongoose.models.Document || mongoose.model('Document', documentSchema);
