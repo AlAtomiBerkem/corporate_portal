@@ -171,10 +171,26 @@ class AdminController {
 
 
     async deleteNews(req, res) {
+        const { id } = req.params;
 
         try {
+            const news = await News.findById(id);
 
-            res.json({ message: 'Admin delete news' });
+            if(!news) {
+                res.status(400).json({message: 'ошибка! новость не найдена'})
+            }
+
+            await News.findByIdAndDelete(id);
+
+            res.json({
+                message: 'Новость успешно удалена',
+                deletedNews: {
+                    id: news._id,
+                    title: news.title,
+                    deletedAt: new Date()
+                }
+            });
+
         } catch(e) {
             res.status(500).json({ error: e.message });
         }
@@ -201,18 +217,53 @@ class AdminController {
     }
 
     async updateLegalInformation(req, res) {
+        const {id} = req.params;
+
         try {
-            res.json({ message: 'Admin updateLegalInformation' });
+            const {title, content} = req.body
+            if (!title || !content) {
+                res.status(400).json({message: 'title или content для юо статьи не найдены'})
+            }
+            const legalContent = await Legal.findById(id);
+            if (!legalContent) {
+                return res.status(404).send({ error: "Ошибка: юр статья не найдена" });
+            }
+            legalContent.title = title;
+            legalContent.content = content;
+            legalContent.updatedAt = Date.now();
+            await legalContent.save();
+            res.json({ message: 'юр статья успешно обновлена', legalContent });
         } catch (e) {
             res.status(500).json({ error: e.message });
         }
     }
 
     async deleteLegalInformation(req, res) {
+        const { id } = req.params;
+
         try {
-            res.json({ message: 'Admin deleteLegalInformation' });
+            const legal = await Legal.findById(id);
+            if (!legal) {
+                return res.status(404).json({ message: 'Юридическая статья не найдена' });
+            }
+
+            await Legal.findByIdAndDelete(id);
+
+            return res.json({
+                message: 'Юридическая статья успешно удалена',
+                deletedLegal: {
+                    id: legal._id,
+                    title: legal.title,
+                    deletedAt: new Date()
+                }
+            });
+
         } catch (e) {
-            res.status(500).json({ error: e.message });
+            console.error(`Ошибка при удалении юридической статьи ${id}:`, e);
+            return res.status(500).json({
+                error: 'Произошла ошибка при удалении юридической статьи',
+                details: process.env.NODE_ENV === 'development' ? e.message : undefined
+            });
         }
     }
 
@@ -235,7 +286,9 @@ class AdminController {
     }
 
     async deleteTechnicalContent(req, res) {
+        const { id } = req.params;
         try {
+
             res.json({message: 'Admin deleteTechnicalContent'});
         } catch (e) {
             res.status(500).json({error: e.message});
