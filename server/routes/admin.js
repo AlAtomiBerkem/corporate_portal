@@ -13,8 +13,8 @@ router.delete('/delete/legal/:id', checkAuth, checkAdmin, adminController.delete
 router.post('/docs', checkAuth, checkAdmin, adminController.addDocument);
 router.delete('/docs/:id', checkAuth, checkAdmin, adminController.deleteDocument);
 
-router.post('/content', checkAuth, checkAdmin, adminController.createLegalInformation);
-router.patch('/content/:id', checkAuth, checkAdmin, adminController.updateLegalInformation);
-router.delete('/content/:id', checkAuth, checkAdmin, adminController.deleteLegalInformation);
+router.post('/content', checkAuth, checkAdmin, adminController.addTechnicalContent);
+router.patch('/content/:id', checkAuth, checkAdmin, adminController.updateTechnicalContent);
+router.delete('/content/:id', checkAuth, checkAdmin, adminController.deleteTechnicalContent);
 
 module.exports = router;
