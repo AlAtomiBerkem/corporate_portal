@@ -1,4 +1,3 @@
-const res = require("express/lib/response");
 const News = require("../model/news");
 const Content = require("../model/publicContent");
 const Legal = require("../model/legalPageArticle");
@@ -270,28 +269,71 @@ class AdminController {
     //API для контента
 
     async addTechnicalContent(req, res) {
+        const {title, content} = req.body
+
         try {
-            res.json({message: 'Admin addtechnicalContent'});
+            if(!title || !content) {
+                return  res.status(400).send({error: "отсутсует название или описание контента"});
+            }
+            const newContent = Content({
+                title,
+                content,
+            })
+            await newContent.save();
+            res.status(201).json({ message: 'контент успешно добавлена в бд' });
         } catch (e) {
-            res.status(500).json({error: e.message});
+            res.status(500).json({ error: e.message });
         }
     }
 
     async updateTechnicalContent(req, res) {
+        const {id} = req.params;
+
         try {
-            res.json({message: 'Admin updateTechnicalContent'});
+            const {title, content} = req.body
+            if (!title || !content) {
+                res.status(400).json({message: 'title или content для контента не найдены'})
+            }
+            const contentArticle = await Content.findById(id);
+            if (!contentArticle) {
+                return res.status(404).send({ error: "Ошибка: контент не найден" });
+            }
+            contentArticle.title = title;
+            contentArticle.content = content;
+            contentArticle.updatedAt = Date.now();
+            await contentArticle.save();
+            res.json({ message: 'content успешно обновлен', contentArticle });
         } catch (e) {
-            res.status(500).json({error: e.message});
+            res.status(500).json({ error: e.message });
         }
     }
 
     async deleteTechnicalContent(req, res) {
         const { id } = req.params;
-        try {
 
-            res.json({message: 'Admin deleteTechnicalContent'});
+        try {
+            const content = await Content.findById(id);
+            if (!content) {
+                return res.status(404).json({ message: 'контент не найден' });
+            }
+
+            await Content.findByIdAndDelete(id);
+
+            return res.json({
+                message: 'контент успешно удален',
+                deletedLegal: {
+                    id: content._id,
+                    title: content.title,
+                    deletedAt: new Date()
+                }
+            });
+
         } catch (e) {
-            res.status(500).json({error: e.message});
+            console.error(`Ошибка при удалении контента ${id}:`, e);
+            return res.status(500).json({
+                error: 'Произошла ошибка при удалении контента',
+                details: process.env.NODE_ENV === 'development' ? e.message : undefined
+            });
         }
     }
 }
