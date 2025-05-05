@@ -70,6 +70,26 @@ class AuthController {
             res.status(401).json({ error: e.message });
         }
     }
+    async logout(req, res) {
+        try {
+            const { refreshToken } = req.cookies;
+            if (!refreshToken) return res.sendStatus(204); // No Content
+
+            const admin = await Admin.findOne({ refreshToken });
+            if (admin) {
+                admin.refreshToken = null;
+                await admin.save();
+            }
+
+            // Очищаем куки
+            res.clearCookie('refreshToken', {
+                httpOnly: true
+            });
+            return res.sendStatus(204);
+        } catch (e) {
+            res.status(500).json({ error: e.message });
+        }
+    }
 }
 
 module.exports = new AuthController();
