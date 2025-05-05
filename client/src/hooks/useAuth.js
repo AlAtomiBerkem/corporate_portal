@@ -1,58 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import { refresh, logout, login } from "../api/auth.js";
+import { LOCALSTORAGE_KEY } from "../utils/constants.js";
 
-export default function useAuth() {
-    const [token, setToken] = useState(localStorage.getItem('admin_token'));
-    const [expires, setExpires] = useState(localStorage.getItem('token_expires'));
-
-    const updateToken = async () => {
-        try {
-            const res = await fetch('http://localhost:5000/api/admin/refresh', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!res.ok) throw new Error();
-
-            const { token: newToken, expiresIn } = await res.json();
-
-            localStorage.setItem('admin_token', newToken);
-            localStorage.setItem('token_expires', Date.now() + expiresIn * 1000);
-
-            setToken(newToken);
-            setExpires(Date.now() + expiresIn * 1000);
-
-            return true;
-        } catch {
-            logout();
-            return false;
-        }
-    };
-
-    const logout = () => {
-        localStorage.removeItem('admin_token');
-        localStorage.removeItem('token_expires');
-        setToken(null);
-        setExpires(null);
-        window.location.href = '/login';
-    };
+export const useAuth = () => {
+    const [isAuth, setIsAuth] = useState(false);
 
     useEffect(() => {
         const checkAuth = async () => {
-            if (!token || !expires) return logout();
-
-            // Если токен истекает через 5 минут (300000 мс)
-            if (expires - Date.now() < 300000) {
-                const refreshed = await updateToken();
-                if (!refreshed) return;
+            try {
+                const token = localStorage.getItem(LOCALSTORAGE_KEY.ACCESS_TOKEN);
+                if (token) {
+                    await refresh(); // Проверяем валидность токена
+                    setIsAuth(true);
+                }
+            } catch {
+                setIsAuth(false);
             }
         };
-
         checkAuth();
-        const interval = setInterval(checkAuth, 60000); // Проверка каждую минуту
+    }, []);
 
-        return () => clearInterval(interval);
-    }, [token, expires]);
-
-    return { token, updateToken, logout };
-}
+    return { isAuth, login, logout };
+};

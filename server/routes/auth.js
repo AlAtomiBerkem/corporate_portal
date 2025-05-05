@@ -8,6 +8,6 @@ router.post('/login', authController.login);
 router.post('/refresh', authController.refresh);
 
 //POST запрос на выход администратора из системы
-// router.post( '/logout', authController.logout)
+ router.post( '/logout', authController.logout)
 
 module.exports = router;
