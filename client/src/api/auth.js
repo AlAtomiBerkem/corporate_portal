@@ -1,19 +1,29 @@
-import api from './axios.js';
-import {LOCALSTORAGE_KEY} from '../utils/constants.js'
+const baseUrl = 'http://localhost:5000';
 
-export const login = async (login, password) => {
-    const {data} = await api.post('auth/login', {login, password});
-    localStorage.setItem(LOCALSTORAGE_KEY.ACCESS_TOKEN, data.accessToken);
-    return data;
+export async function fetchAPI(endpoint, method = 'GET', body = null, needAuth = false) {
+    const headers = {};
+
+    if (body) headers['Content-Type'] = 'application/json';
+    if (needAuth) {
+        const token = localStorage.getItem('accessToken');
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${baseUrl}${endpoint}`, {
+        method,
+        headers,
+        body: body ? JSON.stringify(body) : null,
+        credentials: 'include' // Для куков с refreshToken
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Request failed');
+    }
+
+    return response.json();
 }
 
-export const refresh = async () => {
-        const {data} = await api.post('auth/refresh');
-        localStorage.setItem(LOCALSTORAGE_KEY.ACCESS_TOKEN, data.accessToken);
-        return data;
-}
-
-export const logout = async () => {
-    await api.post('auth/logout');
-    localStorage.removeItem(LOCALSTORAGE_KEY.ACCESS_TOKEN);
+export function isAuthenticated() {
+    return !!localStorage.getItem('accessToken');
 }

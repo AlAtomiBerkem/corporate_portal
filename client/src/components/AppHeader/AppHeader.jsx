@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import './AppHeaderStyle.css';
 import User from '../../assets/svg/user.jsx';
 import Logo from '../../assets/logo10.png';
+import { isAuthenticated } from '../../api/auth.js'; // Импортируем функцию проверки аутентификации
 
 const AppHeader = () => {
-    const isAdmin = !!localStorage.getItem('admin_token');
+    const isAuth = isAuthenticated(); // Используем функцию из auth.js
 
     return (
         <div>
@@ -17,10 +18,10 @@ const AppHeader = () => {
                             <p className="header__company-name">Инженерные решения</p>
                         </div>
                         <div className="header__button">
-                            <Link to={isAdmin ? "/admin" : "/login"}>
+                            <Link to={isAuth ? "/admin" : "/login"}>
                                 <button className="header__button-button">
                                     <strong className="button-text">
-                                        {isAdmin ? "Личный кабинет" : "войти в кабинет"}
+                                        {isAuth ? "Личный кабинет" : "войти в кабинет"}
                                     </strong>
                                     <User className="button-svg" />
                                 </button>
