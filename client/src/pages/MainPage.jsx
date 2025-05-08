@@ -8,7 +8,7 @@ import AppMaintenance from "../components/AppMaintenance/AppMaintenance.jsx";
 import AppContactInfo from "../components/AppContactInfo/AppContactInfo.jsx";
 import AppFooter from "../components/AppFooter/AppFooter.jsx";
 import FAQ from "../components/AppFAQ/AppFAQ.jsx";
-import NewsList from "../components/NewsList/NewsList.jsx";
+// import NewsList from "../components/NewsList/NewsList.jsx";
 
 const MainPage = () => {
     return (
@@ -17,7 +17,7 @@ const MainPage = () => {
             <AppNavbar />
             <AppHeroBlock />
             <AppUsersBlock />
-            <NewsList />
+            {/*<NewsList />*/}
             {/*<AppNaturalGasBlock />*/}
             <AppMaintenance />
             <FAQ />
