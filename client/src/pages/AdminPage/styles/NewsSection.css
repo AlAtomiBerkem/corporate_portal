@@ -1,0 +1,38 @@
+.news-section {
+    padding: 1rem 0;
+}
+
+.news-list {
+    display: grid;
+    gap: 1.2rem;
+}
+
+.news-title {
+    margin: 0 0 0.8rem 0;
+    color: #2c3e50;
+    font-size: 1.2rem;
+}
+
+.news-content {
+    color: #34495e;
+    margin: 0 0 1rem 0;
+    line-height: 1.5;
+}
+
+.news-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.8rem;
+    border-top: 1px solid #ecf0f1;
+}
+
+.news-date {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+.news-actions {
+    display: flex;
+    gap: 0.8rem;
+}
