@@ -16,6 +16,10 @@ export async function fetchAPI(endpoint, method = 'GET', body = null, needAuth =
         credentials: 'include' // Для куков с refreshToken
     });
 
+    const contentLength = response.headers.get('content-length');
+    if (response.status === 204 || contentLength === '0') return null
+
+
     if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message || 'Request failed');

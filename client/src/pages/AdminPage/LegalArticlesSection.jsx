@@ -16,7 +16,6 @@ const LegalArticlesSection = () => {
                             <span className="technical-date">Последнее обновление: 15.05.2023</span>
                             <div className="technical-actions">
                                 <button className="btn-edit">Изменить</button>
-                                <button className="btn-publish">Опубликовать</button>
                             </div>
                         </div>
                     </div>
