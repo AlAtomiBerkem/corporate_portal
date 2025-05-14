@@ -11,7 +11,6 @@ export const adminApi = {
     deleteNews: async (id) =>
         await withAuth(() => fetchAPI(`/admin/delete/news/${id}`, 'DELETE', null, true)),
 
-    // Аналогично для других сущностей
     uploadDocument: async (file, title) => {
         const formData = new FormData();
         formData.append('document', file);

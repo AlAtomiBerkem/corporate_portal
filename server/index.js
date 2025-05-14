@@ -14,10 +14,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(fileUpload ({}))
 
-// Маршруты аутентификации
 app.use('/auth', require('./routes/auth'));
 
-// Маршруты администратора
 app.use('/admin', require('./routes/admin'));
 
 app.use('/public', require('./routes/publicRoutes'));
