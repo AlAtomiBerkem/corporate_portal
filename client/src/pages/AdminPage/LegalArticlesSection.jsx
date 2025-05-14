@@ -1,41 +1,41 @@
 import './styles/LegalArticlesSection.css';
 import Card from './Shared/Card';
+import ContentBtn from '../../components/AdmiinNewContentBtn/ContentBtn.jsx';
+import { publicApi } from "../../api/publicApi.js";
+import { useFetchData } from "../../hooks/useFetchData";
 
 const LegalArticlesSection = () => {
+    const { data: legalArticles, loading } = useFetchData(publicApi.getLegalArticle);
+
+    if (loading) return <div>Загрузка...</div>;
 
     return (
         <div className="technical-section">
-            <div className="technical-list">
-                <Card>
-                    <div className="technical-item">
-                        <h3>Правила для юр.лиц</h3>
-                        <p className="technical-description">
-                            Требования и условия сотрудничества с юридическими лицами...
-                        </p>
-                        <div className="technical-footer">
-                            <span className="technical-date">Последнее обновление: 15.05.2023</span>
-                            <div className="technical-actions">
-                                <button className="btn-edit">Изменить</button>
-                            </div>
-                        </div>
-                    </div>
-                </Card>
+            <ContentBtn name={'+ Добавить контент'} />
 
-                <Card>
-                    <div className="technical-item">
-                        <h3>Шаблон договора</h3>
-                        <p className="technical-description">
-                            Стандартная форма договора для корпоративных клиентов...
-                        </p>
-                        <div className="technical-footer">
-                            <span className="technical-date">Версия 2.1 от 01.04.2023</span>
-                            <div className="technical-actions">
-                                <button className="btn-download">Скачать DOCX</button>
-                                <button className="btn-edit">Редактировать</button>
+
+            <div className="technical-list">
+                {legalArticles.map((item, index) => (
+                    <Card key={item.id || index}>
+                        <div className="article-item">
+                            <div className="article-header">
+                                <h3>{item.title}</h3>
+                            </div>
+                            <p className="article-excerpt">{item.content}</p>
+                            <div className="article-footer">
+                                <div className="article-meta">
+                                    <span className="article-date">
+                                        {new Date(item.createdAt).toLocaleDateString()}
+                                    </span>
+                                </div>
+                                <div className="article-actions">
+                                    <button className="btn-edit">Редактировать</button>
+                                    <button className="btn-delete">Удалить</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </Card>
+                    </Card>
+                ))}
             </div>
         </div>
     );

@@ -1,55 +1,39 @@
 import './styles/ArticleSection.css';
 import Card from './Shared/Card';
+import { publicApi } from "../../api/publicApi.js";
+import ContentBtn from "../../components/AdmiinNewContentBtn/ContentBtn.jsx";
+import { useFetchData } from "../../hooks/useFetchData.js";
 
 const ArticleSection = () => {
+
+    const { data: content, loading } = useFetchData(publicApi.getContent);
+    if(loading) return <div>...загрузака статей</div>
+
     return (
         <div className="article-section">
-            <div className="article-controls">
-                <button className="btn-add-article">+ Новая статья</button>
-                <div className="article-filter">
-                </div>
-            </div>
-
+            <ContentBtn name={'+ Добавить контент'}/>
             <div className="article-list">
-                <Card>
-                    <div className="article-item">
-                        <div className="article-header">
-                            <h3>Как оптимизировать бизнес-процессы</h3>
-                        </div>
-                        <p className="article-excerpt">
-                            Полное руководство по оптимизации workflow в современных компаниях...
-                        </p>
-                        <div className="article-footer">
-                            <div className="article-meta">
-                                <span className="article-date">12.04.2023</span>
+                {content.map((item, index) => (
+                    <Card key={item.id || index}>
+                        <div className="article-item">
+                            <div className="article-header">
+                                <h3>{item.title}</h3>
                             </div>
-                            <div className="article-actions">
-                                <button className="btn-edit">Редактировать</button>
-                                <button className="btn-delete">Удалить</button>
-                            </div>
-                        </div>
-                    </div>
-                </Card>
-
-                <Card>
-                    <div className="article-item">
-                        <div className="article-header">
-                            <h3>Новые налоговые правила 2023</h3>
-                        </div>
-                        <p className="article-excerpt">
-                            Все изменения в налоговом законодательстве, которые важно учесть...
-                        </p>
-                        <div className="article-footer">
-                            <div className="article-meta">
-                                <span className="article-date">28.03.2023</span>
-                            </div>
-                            <div className="article-actions">
-                                <button className="btn-edit">Редактировать</button>
-                                <button className="btn-delete">Удалить</button>
+                            <p className="article-excerpt">{item.content}</p>
+                            <div className="article-footer">
+                                <div className="article-meta">
+                                    <span className="article-date">
+                                        {new Date(item.createdAt).toLocaleDateString()}
+                                    </span>
+                                </div>
+                                <div className="article-actions">
+                                    <button className="btn-edit">Редактировать</button>
+                                    <button className="btn-delete">Удалить</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </Card>
+                    </Card>
+                ))}
             </div>
         </div>
     );

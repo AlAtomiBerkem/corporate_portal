@@ -19,7 +19,6 @@ class PublicController {
             }
 
             res.status(200).json({
-                message: "Данные успешно получены",
                 data: content
             });
 
@@ -40,11 +39,8 @@ class PublicController {
             }
 
             res.status(200).json({
-                message: "Новости успешно получены",
                 data: news
             });
-
-            res.json({ message: 'Пользователи получили новости' });
         } catch (e) {
             res.status(500).send({error: e.message});
         }
@@ -93,14 +89,31 @@ class PublicController {
         }
     }
 
-    async publicLegal(req, res) {
+    async downloadDocument(req, res) {
+        const fileName = req.params.fileName;
+        const filePath = path.join(DOCUMENTS_DIR, fileName);
+
+        if (fs.existsSync(filePath)) {
+            res.download(filePath, fileName, (err) => {
+                if (err) {
+                    console.error('Ошибка при загрузке файла:', err);
+                    res.status(500).send('Ошибка при загрузке файла');
+                }
+            });
+        } else {
+            res.status(404).send('Файл не найден');
+        }
+    }
+
+
+
+async publicLegal(req, res) {
         try {
             const legal = await Legal.find({})
             if(!legal) {
                 res.status(400).json({message: 'ошибка юр статьи не найдены или пусты'})
             }
             res.status(200).json({data: legal})
-            res.json({message: 'пользователь получил юридические статьи '})
         } catch (e) {
             res.status(500).send({error: e.message});
         }
