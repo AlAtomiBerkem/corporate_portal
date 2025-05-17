@@ -1,0 +1,310 @@
+.news-form {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 32px;
+    margin: 0 auto 24px;
+    width: 100%;
+    max-width: 800px;
+    box-sizing: border-box;
+}
+
+.editor-container {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    background: #fff;
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e2e8f0;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.toolbar button, .toolbar-select {
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.toolbar button:hover {
+    background: #f1f5f9;
+}
+
+.toolbar button.active {
+    background: #3498DA;
+    color: white;
+    border-color: #3498DA;
+}
+
+.toolbar-select {
+    min-width: 100px;
+}
+
+.color-picker {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid #ddd;
+}
+
+.editor-content {
+    padding: 16px;
+    min-height: 50px;
+    outline: none;
+    line-height: 1.6;
+    font-size: 16px;
+}
+
+.editor-content p {
+    margin: 0 0 1em 0;
+}
+
+/* Сохраняем ваши оригинальные стили */
+.news-form__title {
+    color: #2d3748;
+    font-size: 1.75rem;
+    margin-bottom: 24px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.news-form__input {
+    width: 100%;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #f8fafc;
+    box-sizing: border-box;
+}
+
+.news-form__input:focus {
+    outline: none;
+    border-color: #3498DA;
+    box-shadow: 0 0 0 3px rgba(52, 152, 218, 0.2);
+    background-color: #ffffff;
+}
+
+.news-form__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.news-form__button {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    min-width: 120px;
+}
+
+.news-form__button--cancel {
+    background-color: #f1f5f9;
+    color: #64748b;
+}
+
+.news-form__button--cancel:hover {
+    background-color: #e2e8f0;
+}
+
+.news-form__button--submit {
+    background-color: #3498DA;
+    color: white;
+}
+
+.news-form__button--submit:hover {
+    background-color: #2980B9;
+}
+
+.news-form__error {
+    color: #e53e3e;
+    background-color: #fff5f5;
+    padding: 14px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #fed7d7;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+
+.news-form {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 32px;
+    margin: 0 auto 24px;
+    width: 100%;
+    max-width: 800px;
+    box-sizing: border-box;
+}
+
+.form-header {
+    margin-bottom: 24px;
+}
+
+.news-form__title {
+    color: #2d3748;
+    font-size: 1.75rem;
+    margin-bottom: 16px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.font-controls {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.font-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.font-selector label {
+    font-size: 0.9rem;
+    color: #4a5568;
+}
+
+.font-selector select {
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+    background: white;
+}
+
+.editor-container {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    background: #fff;
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e2e8f0;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    align-items: center;
+}
+
+.toolbar button, .font-select {
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.toolbar button:hover {
+    background: #f1f5f9;
+}
+
+.toolbar button.active {
+    background: #3498DA;
+    color: white;
+    border-color: #3498DA;
+}
+
+.font-select {
+    min-width: 120px;
+}
+
+.editor-content {
+    padding: 16px;
+    min-height: 50px;
+    outline: none;
+    line-height: 1.6;
+    font-size: 16px;
+}
+
+/* Остальные стили оставляем как были */
+.news-form__input {
+    width: 100%;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #f8fafc;
+    box-sizing: border-box;
+}
+
+.news-form__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+/* Добавляем стандартные межбуквенные расстояния */
+.editor-content {
+    letter-spacing: normal;
+    word-spacing: normal;
+    line-height: 1.5; /* Стандартный межстрочный интервал */
+}
+
+/* Улучшаем отображение текста в поле ввода */
+.news-form__input {
+    letter-spacing: normal;
+    padding: 12px 16px; /* Увеличиваем отступы */
+}
+
+/* Улучшаем панель инструментов */
+.toolbar {
+    gap: 10px;
+    padding: 12px;
+}
+
+.font-controls {
+    gap: 15px;
+}
+
+.font-selector {
+    gap: 8px;
+}
+
+.font-selector select {
+    padding: 8px 12px;
+}
+
+/* Убираем лишние отступы между абзацами */
+.ProseMirror p {
+    margin: 0;
+    padding: 0;
+}
+
+/* Стиль для переносов строк */
+.hard-break {
+    display: block;
+    content: '';
+    height: 1em;
+}
