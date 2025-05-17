@@ -1,6 +1,6 @@
-import ContentBtn from "../../components/AdmiinNewContentBtn/ContentBtn.jsx";
-import Card from './Shared/Card.jsx';
-import { publicApi } from "../../api/publicApi.js";
+import ContentBtn from "../../../components/AdmiinNewContentBtn/ContentBtn.jsx";
+import Card from '../Shared/Card.jsx';
+import { publicApi } from "../../../api/publicApi.js";
 import { useEffect, useState } from "react";
 
 const DocumentsSection = () => {

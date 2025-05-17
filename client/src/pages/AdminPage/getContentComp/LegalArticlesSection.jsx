@@ -1,19 +1,21 @@
-import './styles/ArticleSection.css';
-import Card from './Shared/Card';
-import { publicApi } from "../../api/publicApi.js";
-import ContentBtn from "../../components/AdmiinNewContentBtn/ContentBtn.jsx";
-import { useFetchData } from "../../hooks/useFetchData.js";
+import '../styles/LegalArticlesSection.css';
+import Card from '../Shared/Card.jsx';
+import ContentBtn from '../../../components/AdmiinNewContentBtn/ContentBtn.jsx';
+import { publicApi } from "../../../api/publicApi.js";
+import { useFetchData } from "../../../hooks/useFetchData.js";
 
-const ArticleSection = () => {
+const LegalArticlesSection = () => {
+    const { data: legalArticles, loading } = useFetchData(publicApi.getLegalArticle);
 
-    const { data: content, loading } = useFetchData(publicApi.getContent);
-    if(loading) return <div>...загрузака статей</div>
+    if (loading) return <div>Загрузка...</div>;
 
     return (
-        <div className="article-section">
-            <ContentBtn name={'+ Добавить контент'}/>
-            <div className="article-list">
-                {content.map((item, index) => (
+        <div className="technical-section">
+            <ContentBtn name={'+ Добавить контент'} />
+
+
+            <div className="technical-list">
+                {legalArticles.map((item, index) => (
                     <Card key={item.id || index}>
                         <div className="article-item">
                             <div className="article-header">
@@ -39,4 +41,4 @@ const ArticleSection = () => {
     );
 };
 
-export default ArticleSection;
+export default LegalArticlesSection;

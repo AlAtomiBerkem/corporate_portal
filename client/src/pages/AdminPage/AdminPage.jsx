@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import AdminHeader from './AdminHeader';
-import AdminTabs from './AdminTabs';
-import AppHeader from "../../components/AppHeader/AppHeader";
-import AppNavbar from "../../components/AppNavbar/AppNavbar";
-import NewsSection from './NewsSection';
-import DocsSection from './DocumentsSection';
-import ArticleSection from "./ArticleSection";
-import LegalArticlesSection from "./LegalArticlesSection.jsx";
+import AdminHeader from './AdminHeader.jsx';
+import AdminTabs from './AdminTabs.jsx';
+import AppHeader from "../../components/AppHeader/AppHeader.jsx";
+import AppNavbar from "../../components/AppNavbar/AppNavbar.jsx";
+import NewsSection from './getContentComp/NewsSection.jsx';
+import DocsSection from './getContentComp/DocumentsSection.jsx';
+import ArticleSection from "./getContentComp/ArticleSection.jsx";
+import LegalArticlesSection from "./getContentComp/LegalArticlesSection.jsx";
 import './styles/AdminPage.css';
 
 const AdminPage = () => {
