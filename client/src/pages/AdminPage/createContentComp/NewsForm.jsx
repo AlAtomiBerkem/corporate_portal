@@ -4,16 +4,19 @@ import StarterKit from '@tiptap/starter-kit';
 import TextStyle from '@tiptap/extension-text-style';
 import FontFamily from '@tiptap/extension-font-family';
 import FontSize from '@tiptap/extension-font-size';
-import HardBreak from '@tiptap/extension-hard-break';
+import DOMPurify from 'dompurify';
+import { adminApi } from '../../../api/adminApi.js';
 import './NewsForm.css';
 
 const NewsForm = ({ onSuccess, onCancel, initialData }) => {
-    const [formData, setFormData] = useState(initialData || {
+    const [formData, setFormData] = useState({
         title: '',
         content: '',
         fontFamily: 'Arial',
-        fontSize: '16px'
+        fontSize: '16px',
+        ...initialData
     });
+
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -23,58 +26,48 @@ const NewsForm = ({ onSuccess, onCancel, initialData }) => {
             TextStyle,
             FontFamily.configure({ types: ['textStyle'] }),
             FontSize,
-            HardBreak.configure({
-                HTMLAttributes: {
-                    class: 'hard-break',
-                },
-            }),
         ],
         content: formData.content,
         onUpdate: ({ editor }) => {
-            setFormData({
-                ...formData,
+            setFormData(prev => ({
+                ...prev,
                 content: editor.getHTML()
-            });
-        },
-        editorProps: {
-            attributes: {
-                class: 'editor-content',
-                style: `font-family: ${formData.fontFamily}; font-size: ${formData.fontSize}`,
-            },
-            handleKeyDown: (view, event) => {
-                if (event.key === 'Enter' && !event.shiftKey) {
-                    view.dispatch(
-                        view.state.tr
-                            .replaceSelectionWith(
-                                view.state.schema.nodes.hard_break.create()
-                            )
-                            .scrollIntoView()
-                    );
-                    return true;
-                }
-                return false;
-            },
+            }));
         },
     });
 
     useEffect(() => {
-        if (editor) {
-            editor.chain().focus()
-                .setFontFamily(formData.fontFamily)
-                .setFontSize(formData.fontSize)
-                .run();
+        if (editor && initialData?.content) {
+            editor.commands.setContent(initialData.content);
         }
-    }, [formData.fontFamily, formData.fontSize, editor]);
+    }, [editor, initialData]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         setError(null);
 
         try {
-            console.log('Отправляемые данные:', formData);
-            onSuccess();
+            const sanitizedContent = DOMPurify.sanitize(formData.content, {
+                ALLOWED_TAGS: ['p', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'br', 'span'],
+                ALLOWED_ATTR: ['style']
+            });
+
+            const newsData = {
+                title: formData.title.trim(),
+                content: sanitizedContent
+            };
+
+            if (initialData?._id) {
+                await adminApi.updateNews(initialData._id, newsData);
+            } else {
+                await adminApi.createNews(newsData);
+            }
+
+            onSuccess(); // Теперь это просто колбэк без параметров
         } catch (err) {
-            setError(err.message || 'Произошла ошибка');
+            setError(err.message || 'Ошибка при сохранении новости');
+            console.error('Ошибка:', err);
         } finally {
             setIsLoading(false);
         }
@@ -108,7 +101,10 @@ const NewsForm = ({ onSuccess, onCancel, initialData }) => {
                 type="text"
                 className="news-form__input"
                 value={formData.title}
-                onChange={(e) => setFormData({...formData, title: e.target.value})}
+                onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    title: e.target.value
+                }))}
                 placeholder="Заголовок новости"
                 required
             />
@@ -117,21 +113,31 @@ const NewsForm = ({ onSuccess, onCancel, initialData }) => {
                 <div className="toolbar">
                     <select
                         value={formData.fontFamily}
-                        onChange={(e) => setFormData({...formData, fontFamily: e.target.value})}
+                        onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            fontFamily: e.target.value
+                        }))}
                         className="toolbar-select"
                     >
                         {FONT_OPTIONS.map(font => (
-                            <option key={font.value} value={font.value}>{font.label}</option>
+                            <option key={font.value} value={font.value}>
+                                {font.label}
+                            </option>
                         ))}
                     </select>
 
                     <select
                         value={formData.fontSize}
-                        onChange={(e) => setFormData({...formData, fontSize: e.target.value})}
+                        onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            fontSize: e.target.value
+                        }))}
                         className="toolbar-select"
                     >
                         {FONT_SIZE_OPTIONS.map(size => (
-                            <option key={size.value} value={size.value}>{size.label}</option>
+                            <option key={size.value} value={size.value}>
+                                {size.label}
+                            </option>
                         ))}
                     </select>
 
