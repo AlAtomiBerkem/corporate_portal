@@ -8,38 +8,60 @@ import NewsForm from '../createContentComp/NewsForm.jsx';
 
 const NewsSection = () => {
     const [showForm, setShowForm] = useState(false);
+    const [editingNews, setEditingNews] = useState(null);
     const { data: news, refetch } = useFetchData(publicApi.getNews);
 
-    // После успешного сохранения:
     const handleSuccess = () => {
         setShowForm(false);
-        refetch(); // Обновляем список новостей
+        setEditingNews(null);
+        refetch();
+    };
+
+    const handleEdit = (newsItem) => {
+        setEditingNews(newsItem);
+        setShowForm(true);
     };
 
     return (
         <div className="news-section">
             <ContentBtn
                 name={showForm ? '× Отмена' : '+ Добавить новость'}
-                onClick={() => setShowForm(!showForm)}
+                onClick={() => {
+                    setEditingNews(null);
+                    setShowForm(!showForm);
+                }}
             />
 
             {showForm && (
                 <NewsForm
+                    initialData={editingNews}
                     onSuccess={handleSuccess}
-                    onCancel={() => setShowForm(false)}
+                    onCancel={() => {
+                        setShowForm(false);
+                        setEditingNews(null);
+                    }}
                 />
             )}
+
             <div className="news-list">
                 {news.map(item => (
                     <Card key={item._id}>
                         <h3 className="news-title">{item.title}</h3>
-                        <p className="news-content">{item.content}</p>
+                        <div
+                            className="news-content"
+                            dangerouslySetInnerHTML={{ __html: item.content }}
+                        />
                         <div className="news-footer">
                             <span className="news-date">
                                 {new Date(item.createdAt).toLocaleDateString()}
                             </span>
                             <div className="news-actions">
-                                <button className="btn-edit">Редактировать</button>
+                                <button
+                                    className="btn-edit"
+                                    onClick={() => handleEdit(item)}
+                                >
+                                    Редактировать
+                                </button>
                                 <button className="btn-delete">Удалить</button>
                             </div>
                         </div>
