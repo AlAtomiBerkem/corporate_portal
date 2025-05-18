@@ -8,23 +8,19 @@ const { v4: uuidv4 } = require('uuid');
 const DOCUMENTS_DIR = path.join(__dirname, 'documents');
 const META_FILE = path.join(DOCUMENTS_DIR, '_metadata.json');
 
-// Создаём папку для документов, если её нет
 if (!fs.existsSync(DOCUMENTS_DIR)) {
     fs.mkdirSync(DOCUMENTS_DIR, { recursive: true });
 }
 
-// Инициализируем файл метаданных, если его нет
 if (!fs.existsSync(META_FILE)) {
     fs.writeFileSync(META_FILE, '{}');
 }
 
 class AdminController {
 
-    // API для документов
 
     async addDocument(req, res) {
         try {
-            // Проверка наличия файла и названия
             if (!req.files?.document || !req.body?.title) {
                 return res.status(400).json({ message: 'Требуется файл и название (title)' });
             }
@@ -33,14 +29,11 @@ class AdminController {
             const fileExt = path.extname(file.name);
             const baseName = path.basename(file.name, fileExt);
 
-            // Генерируем уникальное имя файла
             const uniqueName = `${baseName}_${uuidv4()}${fileExt}`;
             const uploadPath = path.join(DOCUMENTS_DIR, uniqueName);
 
-            // Сохраняем файл
             await file.mv(uploadPath);
 
-            // Читаем и обновляем метаданные
             const meta = JSON.parse(fs.readFileSync(META_FILE, 'utf-8'));
             meta[uniqueName] = {
                 title: req.body.title,
@@ -70,7 +63,6 @@ class AdminController {
         try {
             const { id } = req.params;
 
-            // Проверка наличия ID (как в addDocument проверяем title)
             if (!id) {
                 return res.status(400).json({
                     success: false,
@@ -78,10 +70,8 @@ class AdminController {
                 });
             }
 
-            // Формируем путь к файлу (как в addDocument)
             const filePath = path.join(DOCUMENTS_DIR, id);
 
-            // Проверка существования файла (аналогично проверке в addDocument)
             if (!fs.existsSync(filePath)) {
                 return res.status(404).json({
                     success: false,
@@ -89,21 +79,17 @@ class AdminController {
                 });
             }
 
-            // Удаляем файл
             fs.unlinkSync(filePath);
 
-            // Обновляем метаданные (как в addDocument)
             if (fs.existsSync(META_FILE)) {
                 const meta = JSON.parse(fs.readFileSync(META_FILE, 'utf-8'));
 
-                // Удаляем запись о файле из метаданных
                 if (meta[id]) {
                     delete meta[id];
                     fs.writeFileSync(META_FILE, JSON.stringify(meta, null, 2));
                 }
             }
 
-            // Возвращаем ответ в том же стиле, что и addDocument
             res.json({
                 success: true,
                 message: 'Документ успешно удален',
@@ -123,9 +109,6 @@ class AdminController {
         }
     }
 
-
-
-    // API  новостей
     async createNews(req, res) {
         const {title, content} = req.body
 
@@ -195,8 +178,6 @@ class AdminController {
         }
     }
 
-    //API для Юр статей
-
     async createLegalInformation(req, res) {
         const {title, content} = req.body
 
@@ -265,8 +246,6 @@ class AdminController {
             });
         }
     }
-
-    //API для контента
 
     async addTechnicalContent(req, res) {
         const {title, content} = req.body
