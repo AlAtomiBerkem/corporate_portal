@@ -6,7 +6,7 @@ import Logo from '../../assets/logo10.png';
 import { isAuthenticated } from '../../api/auth.js'; // Импортируем функцию проверки аутентификации
 
 const AppHeader = () => {
-    const isAuth = isAuthenticated(); // Используем функцию из auth.js
+    const isAuth = isAuthenticated(); // Используем функцию из Auth.js
 
     return (
         <div>

@@ -3,8 +3,9 @@ import Card from '../Shared/Card.jsx';
 import { publicApi } from "../../../api/publicApi.js";
 import { useFetchData } from "../../../hooks/useFetchData.js";
 import ContentBtn from "../../../components/AdmiinNewContentBtn/ContentBtn.jsx";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import NewsForm from '../createContentComp/NewsForm.jsx';
+import ScrollPageToTop from "../../../helpers/ScrollPageToTop.js";
 
 const NewsSection = () => {
     const [showForm, setShowForm] = useState(false);
@@ -21,6 +22,10 @@ const NewsSection = () => {
         setEditingNews(newsItem);
         setShowForm(true);
     };
+
+    useEffect(() => {
+        ScrollPageToTop('myBtn')
+    }, []);
 
     return (
         <div className="news-section">
@@ -58,7 +63,10 @@ const NewsSection = () => {
                             <div className="news-actions">
                                 <button
                                     className="btn-edit"
-                                    onClick={() => handleEdit(item)}
+                                    onClick={() => {
+                                        handleEdit(item);
+                                        ScrollPageToTop('myButton');
+                                    }}
                                 >
                                     Редактировать
                                 </button>

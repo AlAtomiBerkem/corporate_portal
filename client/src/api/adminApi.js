@@ -1,5 +1,5 @@
 import {fetchAPI} from "./auth.js";
-import {withAuth} from "../utils/auth.js";
+import {withAuth} from "../helpers/Auth.js";
 
 export const adminApi = {
     createNews: async (newsData) =>
