@@ -1,4 +1,4 @@
-import { login } from '../../utils/auth.js';
+import { login } from '../../helpers/Auth.js';
 import AppFooter from "../AppFooter/AppFooter.jsx";
 import { useState } from "react";
 import './LoginFormStyle.css';
