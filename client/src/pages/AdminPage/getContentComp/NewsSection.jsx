@@ -65,7 +65,7 @@ const NewsSection = () => {
                                     className="btn-edit"
                                     onClick={() => {
                                         handleEdit(item);
-                                        ScrollPageToTop('myButton');
+                                        ScrollPageToTop();
                                     }}
                                 >
                                     Редактировать
