@@ -9,14 +9,12 @@ import { adminApi } from '../../../api/adminApi.js';
 import './NewsForm.css';
 
 const NewsForm = ({ onSuccess, onCancel, initialData }) => {
-    const [formData, setFormData] = useState({
-        title: '',
-        content: '',
+    const [formData, setFormData] = useState(initialData || {
+        title: initialData?.title || '',
+        content: initialData?.content || '',
         fontFamily: 'Arial',
-        fontSize: '16px',
-        ...initialData
+        fontSize: '16px'
     });
-
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -42,16 +40,30 @@ const NewsForm = ({ onSuccess, onCancel, initialData }) => {
         }
     }, [editor, initialData]);
 
+    useEffect(() => {
+        if (editor) {
+            editor.chain().focus()
+                .setFontFamily(formData.fontFamily)
+                .setFontSize(formData.fontSize)
+                .run();
+        }
+    }, [formData.fontFamily, formData.fontSize, editor]);
+
+    const sanitizeContent = (html) => {
+        return DOMPurify.sanitize(html, {
+            ALLOWED_TAGS: ['p', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'br', 'span'],
+            ALLOWED_ATTR: ['style'],
+            ALLOW_STYLE: true
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         setError(null);
 
         try {
-            const sanitizedContent = DOMPurify.sanitize(formData.content, {
-                ALLOWED_TAGS: ['p', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'br', 'span'],
-                ALLOWED_ATTR: ['style']
-            });
+            const sanitizedContent = sanitizeContent(formData.content);
 
             const newsData = {
                 title: formData.title.trim(),
@@ -64,7 +76,7 @@ const NewsForm = ({ onSuccess, onCancel, initialData }) => {
                 await adminApi.createNews(newsData);
             }
 
-            onSuccess(); // Теперь это просто колбэк без параметров
+            onSuccess();
         } catch (err) {
             setError(err.message || 'Ошибка при сохранении новости');
             console.error('Ошибка:', err);
@@ -82,11 +94,17 @@ const NewsForm = ({ onSuccess, onCancel, initialData }) => {
     ];
 
     const FONT_SIZE_OPTIONS = [
-        { value: '14px', label: 'Маленький' },
-        { value: '16px', label: 'Обычный' },
-        { value: '18px', label: 'Большой' },
-        { value: '20px', label: 'Очень большой' },
-        { value: '24px', label: 'Заголовочный' }
+        { value: '8px', label: '8px' },
+        { value: '10px', label: '10px' },
+        { value: '12px', label: '12px' },
+        { value: '14px', label: '14px' },
+        { value: '16px', label: '16px' },
+        { value: '18px', label: '18px' },
+        { value: '20px', label: '20px' },
+        { value: '24px', label: '24px' },
+        { value: '26px', label: '26px' },
+        { value: '28px', label: '28px' },
+
     ];
 
     return (

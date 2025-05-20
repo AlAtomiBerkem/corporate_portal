@@ -7,7 +7,7 @@ import PageTechnicalWork from "./pages/PageTechnicalWork/PageTechnicalWork.jsx";
 import PageLogin from "./pages/PageLogin/PageLogin.jsx";
 import AdminPage from "./pages/AdminPage/AdminPage.jsx";
 import Documents from "./components/Documents/Documents.jsx";
-
+import PrivateRoute from './helpers/PrivateRoute.jsx'
 function App() {
     return (
         <BrowserRouter>
@@ -16,7 +16,11 @@ function App() {
                 <Route path="/PageContent" element={<PageContent />} />
                 <Route path="/PageTechnicalWork" element={<PageTechnicalWork />} />
                 <Route path="/login" element={<PageLogin />} />
-                <Route path="/admin" element={<AdminPage />} />
+                <Route path="/admin" element={
+                    <PrivateRoute>
+                    <AdminPage />
+                    </PrivateRoute>
+                } />
                 <Route path="/documents" element={<Documents />} />
                 <Route path="*" element={<PageNotFound />} />
             </Routes>
