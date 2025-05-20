@@ -1,4 +1,4 @@
-import { refreshToken } from '../utils/auth.js'
+import { refreshToken } from '../helpers/Auth.js'
 
 const baseUrl = 'http://localhost:5000';
 

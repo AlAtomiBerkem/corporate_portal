@@ -17,7 +17,7 @@ const AdminPage = () => {
             <AppHeader />
             <AppNavbar />
 
-            <div className="admin-page">
+            <div className="admin-page" id='myButton'>
                 <AdminHeader />
 
                 <main className="admin-container">
@@ -25,13 +25,11 @@ const AdminPage = () => {
                         activeTab={activeTab}
                         onTabChange={setActiveTab}
                     />
-
                     <div className="admin-content">
                         {activeTab === 'Новости' && <NewsSection />}
                         {activeTab === 'Документы' && <DocsSection />}
                         {activeTab === 'Статьи' && <ArticleSection />}
                         {activeTab === 'Юр. Лица' && <LegalArticlesSection />}
-
                     </div>
                 </main>
             </div>
