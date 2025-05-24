@@ -6,11 +6,14 @@ import ContentBtn from "../../../components/AdmiinNewContentBtn/ContentBtn.jsx";
 import { useState, useEffect } from 'react';
 import NewsForm from '../createContentComp/NewsForm.jsx';
 import ScrollPageToTop from "../../../helpers/ScrollPageToTop.js";
+import { UseDeleteData } from "../../../hooks/useDeleteData.js";
 
 const NewsSection = () => {
     const [showForm, setShowForm] = useState(false);
     const [editingNews, setEditingNews] = useState(null);
     const { data: news, refetch } = useFetchData(publicApi.getNews);
+
+    const { error, deleteNews, isDeleting } = UseDeleteData();
 
     const handleSuccess = () => {
         setShowForm(false);
@@ -23,9 +26,21 @@ const NewsSection = () => {
         setShowForm(true);
     };
 
+    const handleDelete = (newsId) => {
+        deleteNews(newsId);
+        console.log('залезли чюда 4')
+
+    }
+
     useEffect(() => {
         ScrollPageToTop('myBtn')
     }, []);
+
+    useEffect(() => {
+        if (error) {
+            alert(error);
+        }
+    }, [error]);
 
     return (
         <div className="news-section">
@@ -70,7 +85,13 @@ const NewsSection = () => {
                                 >
                                     Редактировать
                                 </button>
-                                <button className="btn-delete">Удалить</button>
+                                <button
+                                    className="btn-delete"
+                                    onClick={() => handleDelete(item._id)}
+                                    disabled={isDeleting}
+                                >
+                                    {isDeleting ? 'Удаление...' : 'Удалить'}
+                                </button>
                             </div>
                         </div>
                     </Card>
