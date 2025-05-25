@@ -10,7 +10,6 @@ export const UseDeleteData = () => {
 
         setIsDeleting(true)
         setError(null);
-        console.log('залезли чюда 1')
         try {
             const apiMethod = {
                 news: adminApi.deleteNews,
@@ -22,13 +21,11 @@ export const UseDeleteData = () => {
             if (!apiMethod) throw new Error('Неверный тип элемента');
 
             await apiMethod[type](id);
-            console.log('залезли чюда 2')
 
             return true;
 
         } catch (error) {
             setError(error.message || `Ошибка при удалении ${type}`);
-            console.log('залезли чюда 3')
 
             return false;
         }finally {

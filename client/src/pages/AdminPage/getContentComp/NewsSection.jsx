@@ -28,7 +28,6 @@ const NewsSection = () => {
 
     const handleDelete = (newsId) => {
         deleteNews(newsId);
-        console.log('залезли чюда 4')
 
     }
 
