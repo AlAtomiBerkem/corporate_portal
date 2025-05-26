@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import {useState, useEffect, useCallback} from 'react';
 
 export const useFetchData = (fetchFunction) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [trigger, setTrigger] = useState(0);
 
-    useEffect(() => {
-        const fetchData = async () => {
+        const fetchData = useCallback(async  () => {
             try {
                 setLoading(true);
                 const response = await fetchFunction();
@@ -17,10 +17,20 @@ export const useFetchData = (fetchFunction) => {
             } finally {
                 setLoading(false);
             }
-        };
+        }, [fetchFunction]);
 
-        fetchData();
-    }, [fetchFunction]);
+        const refetch = useCallback(() => {
+            setTrigger(prev => prev + 1);
+        }, []);
 
-    return { data, loading, error };
+        useEffect(() => {
+            fetchData();
+        }, [fetchData, trigger]);
+
+    return {
+        data,
+        loading,
+        error,
+        refetch,
+    };
 };
