@@ -26,8 +26,15 @@ const NewsSection = () => {
         setShowForm(true);
     };
 
-    const handleDelete = (newsId) => {
-        deleteNews(newsId);
+    const handleDelete = async  (newsId) => {
+        try {
+            const success = await deleteNews(newsId)
+            if(success){
+                refetch();
+            }
+        } catch (error) {
+            console.error('ошибка при удалении новости - ',error);
+        }
 
     }
 
