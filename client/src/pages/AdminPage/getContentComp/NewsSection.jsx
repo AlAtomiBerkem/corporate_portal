@@ -1,19 +1,18 @@
-import '../styles/NewsSection.css';
-import Card from '../Shared/Card.jsx';
-import { publicApi } from "../../../api/publicApi.js";
-import { useFetchData } from "../../../hooks/useFetchData.js";
-import ContentBtn from "../../../components/AdmiinNewContentBtn/ContentBtn.jsx";
 import { useState, useEffect } from 'react';
+import { useFetchData } from "../../../hooks/useFetchData.js";
+import { useDeleteData } from "../../../hooks/useDeleteData.js";
+import { publicApi } from "../../../api/publicApi.js";
 import NewsForm from '../createContentComp/NewsForm.jsx';
+import ContentBtn from "../../../components/AdmiinNewContentBtn/ContentBtn.jsx";
+import Card from '../Shared/Card.jsx';
 import ScrollPageToTop from "../../../helpers/ScrollPageToTop.js";
-import { UseDeleteData } from "../../../hooks/useDeleteData.js";
+import '../styles/NewsSection.css';
 
 const NewsSection = () => {
     const [showForm, setShowForm] = useState(false);
     const [editingNews, setEditingNews] = useState(null);
-    const { data: news, refetch } = useFetchData(publicApi.getNews);
-
-    const { error, deleteNews, isDeleting } = UseDeleteData();
+    const { data: news, loading: isLoading, refetch } = useFetchData(publicApi.getNews);
+    const { error: deleteError, deleteNews, isDeleting } = useDeleteData();
 
     const handleSuccess = () => {
         setShowForm(false);
@@ -21,32 +20,26 @@ const NewsSection = () => {
         refetch();
     };
 
-    const handleEdit = (newsItem) => {
-        setEditingNews(newsItem);
-        setShowForm(true);
+    const handleDelete = async (newsId) => {
+        const { success } = await deleteNews(newsId);
+        if (success) {
+            refetch();
+        }
     };
 
-    const handleDelete = async  (newsId) => {
-        try {
-            const success = await deleteNews(newsId)
-            if(success){
-                refetch();
-            }
-        } catch (error) {
-            console.error('ошибка при удалении новости - ',error);
-        }
-
-    }
-
     useEffect(() => {
-        ScrollPageToTop('myBtn')
+        ScrollPageToTop('myBtn');
     }, []);
 
     useEffect(() => {
-        if (error) {
-            alert(error);
+        if (deleteError) {
+            alert(deleteError);
         }
-    }, [error]);
+    }, [deleteError]);
+
+    if (isLoading) {
+        return <div className="loading-spinner">Загрузка...</div>;
+    }
 
     return (
         <div className="news-section">
@@ -70,38 +63,43 @@ const NewsSection = () => {
             )}
 
             <div className="news-list">
-                {news.map(item => (
-                    <Card key={item._id}>
-                        <h3 className="news-title">{item.title}</h3>
-                        <div
-                            className="news-content"
-                            dangerouslySetInnerHTML={{ __html: item.content }}
-                        />
-                        <div className="news-footer">
-                            <span className="news-date">
-                                {new Date(item.createdAt).toLocaleDateString()}
-                            </span>
-                            <div className="news-actions">
-                                <button
-                                    className="btn-edit"
-                                    onClick={() => {
-                                        handleEdit(item);
-                                        ScrollPageToTop();
-                                    }}
-                                >
-                                    Редактировать
-                                </button>
-                                <button
-                                    className="btn-delete"
-                                    onClick={() => handleDelete(item._id)}
-                                    disabled={isDeleting}
-                                >
-                                    {isDeleting ? 'Удаление...' : 'Удалить'}
-                                </button>
+                {news.length === 0 ? (
+                    <p className="empty-state">Новостей пока нет</p>
+                ) : (
+                    news.map(item => (
+                        <Card key={item._id}>
+                            <h3 className="news-title">{item.title}</h3>
+                            <div
+                                className="news-content"
+                                dangerouslySetInnerHTML={{ __html: item.content }}
+                            />
+                            <div className="news-footer">
+                                <span className="news-date">
+                                    {new Date(item.createdAt).toLocaleDateString()}
+                                </span>
+                                <div className="news-actions">
+                                    <button
+                                        className="btn-edit"
+                                        onClick={() => {
+                                            setEditingNews(item);
+                                            setShowForm(true);
+                                            ScrollPageToTop();
+                                        }}
+                                    >
+                                        Редактировать
+                                    </button>
+                                    <button
+                                        className="btn-delete"
+                                        onClick={() => handleDelete(item._id)}
+                                        disabled={isDeleting}
+                                    >
+                                        {isDeleting ? 'Удаление...' : 'Удалить'}
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    </Card>
-                ))}
+                        </Card>
+                    ))
+                )}
             </div>
         </div>
     );
