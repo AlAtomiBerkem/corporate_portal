@@ -5,7 +5,7 @@ import AppHeader from "../../components/AppHeader/AppHeader.jsx";
 import AppNavbar from "../../components/AppNavbar/AppNavbar.jsx";
 import NewsSection from './getContentComp/NewsSection.jsx';
 import DocsSection from './getContentComp/DocumentsSection.jsx';
-import ArticleSection from "./getContentComp/ArticleSection.jsx";
+import ContentSection from "./getContentComp/ContentSection.jsx";
 import LegalArticlesSection from "./getContentComp/LegalArticlesSection.jsx";
 import './styles/AdminPage.css';
 
@@ -28,7 +28,7 @@ const AdminPage = () => {
                     <div className="admin-content">
                         {activeTab === 'Новости' && <NewsSection />}
                         {activeTab === 'Документы' && <DocsSection />}
-                        {activeTab === 'Статьи' && <ArticleSection />}
+                        {activeTab === 'Статьи' && <ContentSection />}
                         {activeTab === 'Юр. Лица' && <LegalArticlesSection />}
                     </div>
                 </main>

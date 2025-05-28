@@ -1,23 +1,23 @@
 import Card from '../pages/AdminPage/Shared/Card.jsx';
 import ScrollPageToTop from "../helpers/ScrollPageToTop.js";
 import { useFetchData } from "./useFetchData.js";
-import { UseDeleteData } from "./useDeleteData.js";
+import { useDeleteData } from "./useDeleteData.js";
 import { useState, useEffect } from "react";
 import ContentBtn from "../components/AdmiinNewContentBtn/ContentBtn.jsx";
 import '../pages/AdminPage/styles/NewsSection.css';
 
-const ContentSection = ({
-                            apiMethods,
-                            formComponent: FormComponent,
-                            cardContentRender,
-                            emptyStateText = "Нет данных",
-                            addButtonText = "+ Добавить",
-                            pageTitle = "Контент"
-                        }) => {
+const useContentSection = ({
+                               apiMethods,
+                               formComponent: FormComponent,
+                               cardContentRender,
+                               emptyStateText = "Нет данных",
+                               addButtonText = "+ Добавить",
+                               pageTitle = "Контент"
+                           }) => {
     const [showForm, setShowForm] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
     const { data: items, refetch } = useFetchData(apiMethods.get);
-    const { error, deleteItem, isDeleting } = UseDeleteData();
+    const { error, deleteItem, isDeleting } = useDeleteData();
 
     const handleSuccess = () => {
         setShowForm(false);
@@ -27,7 +27,7 @@ const ContentSection = ({
 
     const handleDelete = async (id) => {
         try {
-            const success = await deleteItem(id);
+            const { success } = await deleteItem(apiMethods.delete, id);
             if (success) refetch();
         } catch (error) {
             console.error(`Ошибка при удалении: `, error);
@@ -59,6 +59,10 @@ const ContentSection = ({
                     initialData={editingItem}
                     onSuccess={handleSuccess}
                     onCancel={() => setShowForm(false)}
+                    apiMethods={{
+                        create: apiMethods.create,
+                        update: apiMethods.update
+                    }}
                 />
             )}
 
@@ -70,9 +74,9 @@ const ContentSection = ({
                         <Card key={item._id}>
                             {cardContentRender(item)}
                             <div className="content-footer">
-                <span className="content-date">
-                  {new Date(item.createdAt).toLocaleDateString()}
-                </span>
+                                <span className="content-date">
+                                    {new Date(item.createdAt).toLocaleDateString()}
+                                </span>
                                 <div className="content-actions">
                                     <button
                                         className="btn-edit"
@@ -101,4 +105,4 @@ const ContentSection = ({
     );
 };
 
-export default ContentSection;
+export default useContentSection;
