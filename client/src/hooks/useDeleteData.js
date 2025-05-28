@@ -1,47 +1,36 @@
 import { useState } from "react";
-import { adminApi } from "../api/adminApi.js";
 
-export const UseDeleteData = () => {
+export const useDeleteData = () => {
     const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState(null);
 
-    const deleteItem = async (type, id, dletemessage = 'Удалить этот элемент?') => {
-        if(dletemessage && !window.confirm(dletemessage)) return;
+    const deleteItem = async (apiMethod, id, confirmMessage = 'Удалить этот элемент?') => {
+        if (confirmMessage && !window.confirm(confirmMessage)) {
+            return { success: false, cancelled: true };
+        }
 
-        setIsDeleting(true)
+        setIsDeleting(true);
         setError(null);
+
         try {
-            const apiMethod = {
-                news: adminApi.deleteNews,
-                document: adminApi.deleteDocument,
-                legal: adminApi.deleteLegal,
-                content: adminApi.deleteContent,
+            if (!apiMethod || typeof apiMethod !== 'function') {
+                throw new Error('Метод для удаления не найден');
             }
 
-            if (!apiMethod) throw new Error('Неверный тип элемента');
-
-            await apiMethod[type](id);
-
-            return true;
-
-        } catch (error) {
-            setError(error.message || `Ошибка при удалении ${type}`);
-
-            return false;
-        }finally {
+            await apiMethod(id);
+            return { success: true };
+        } catch (err) {
+            const errorMessage = err.response?.data?.message || err.message || 'Ошибка при удалении';
+            setError(errorMessage);
+            return { success: false, error: errorMessage };
+        } finally {
             setIsDeleting(false);
         }
-    }
+    };
 
     return {
         deleteItem,
         isDeleting,
-        error,
-        deleteNews: (id) => deleteItem('news', id),
-        deleteDocument: (id) => deleteItem('document', id),
-        legal: (id) => deleteItem('legal', id),
-        content: (id) => deleteItem('content', id)
-    }
+        error
+    };
 };
-
-export default UseDeleteData;
