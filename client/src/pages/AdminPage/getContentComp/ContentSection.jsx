@@ -1,10 +1,17 @@
-import '../styles/ArticleSection.css';
-import Card from '../Shared/Card.jsx';
-import { publicApi } from "../../../api/publicApi.js";
-import ContentBtn from "../../../components/AdmiinNewContentBtn/ContentBtn.jsx";
+import { useState, useEffect } from 'react';
 import { useFetchData } from "../../../hooks/useFetchData.js";
+import { useDeleteData } from "../../../hooks/useDeleteData.js";
+import { publicApi } from "../../../api/publicApi.js";
+import NewsForm from '../createContentComp/NewsForm.jsx';
+import ContentBtn from "../../../components/AdmiinNewContentBtn/ContentBtn.jsx";
+import Card from '../Shared/Card.jsx';
+import ScrollPageToTop from "../../../helpers/ScrollPageToTop.js";
+import '../styles/ArticleSection.css';
 
 const ArticleSection = () => {
+
+    
+
 
     const { data: content, loading } = useFetchData(publicApi.getContent);
     if(loading) return <div>...загрузака статей</div>
