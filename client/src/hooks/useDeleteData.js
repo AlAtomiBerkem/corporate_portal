@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { adminApi } from "../api/adminApi.js";
 
 export const useDeleteData = () => {
     const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState(null);
 
-    const deleteItem = async (type, id, confirmMessage = 'Удалить этот элемент?') => {
+    const deleteItem = async (apiMethod, id, confirmMessage = 'Удалить этот элемент?') => {
         if (confirmMessage && !window.confirm(confirmMessage)) {
             return { success: false, cancelled: true };
         }
@@ -14,16 +13,14 @@ export const useDeleteData = () => {
         setError(null);
 
         try {
-             const apiMethod = adminApi[`delete${type.charAt(0).toUpperCase() + type.slice(1)}`];
-
             if (!apiMethod || typeof apiMethod !== 'function') {
-                throw new Error(`Метод для удаления ${type} не найден`);
+                throw new Error('Метод для удаления не найден');
             }
 
             await apiMethod(id);
             return { success: true };
         } catch (err) {
-            const errorMessage = err.message || `Ошибка при удалении ${type}`;
+            const errorMessage = err.response?.data?.message || err.message || 'Ошибка при удалении';
             setError(errorMessage);
             return { success: false, error: errorMessage };
         } finally {
@@ -34,10 +31,6 @@ export const useDeleteData = () => {
     return {
         deleteItem,
         isDeleting,
-        error,
-        deleteNews: (id) => deleteItem('News', id),
-        deleteDocument: (id) => deleteItem('Document', id),
-        deleteLegal: (id) => deleteItem('Legal', id),
-        deleteContent: (id) => deleteItem('Content', id)
+        error
     };
 };
