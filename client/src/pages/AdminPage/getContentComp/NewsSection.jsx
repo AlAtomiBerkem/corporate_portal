@@ -1,5 +1,5 @@
 import ContentSection from '../../../hooks/useContentSection.jsx';
-import NewsForm from '../createContentComp/NewsForm.jsx';
+import ContentEditor from '../createContentComp/ContentEditor.jsx'; // <- обратите внимание на переименование файла
 import { publicApi } from "../../../api/publicApi.js";
 import { adminApi } from "../../../api/adminApi.js";
 import '../styles/NewsSection.css';
@@ -23,7 +23,18 @@ const NewsSection = () => {
                 update: adminApi.updateNews,
                 delete: adminApi.deleteNews
             }}
-            formComponent={NewsForm}
+            formComponent={(props) => (
+                <ContentEditor
+                    {...props}
+                    apiMethods={{
+                        create: adminApi.createNews,
+                        update: adminApi.updateNews
+                    }}
+                    contentType="новость"
+                    formTitle={props.initialData ? 'Редактировать новость' : 'Добавить новость'}
+                    titlePlaceholder="Заголовок новости"
+                />
+            )}
             cardContentRender={renderNewsCard}
             addButtonText="+ Добавить новость"
             pageTitle="Новости"

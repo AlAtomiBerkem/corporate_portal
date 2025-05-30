@@ -18,6 +18,7 @@ export async function refreshToken() {
         return data.accessToken;
     } catch (error) {
         localStorage.removeItem('accessToken');
+        window.location.href = '/login';
         throw error;
     }
 }

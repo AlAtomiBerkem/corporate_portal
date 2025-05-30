@@ -1,0 +1,138 @@
+.content-editor {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 32px;
+    margin: 0 auto 24px;
+    width: 100%;
+    max-width: 800px;
+    box-sizing: border-box;
+}
+
+.content-editor__title {
+    color: #2d3748;
+    font-size: 1.75rem;
+    margin-bottom: 24px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.content-editor__input {
+    width: 100%;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #f8fafc;
+    box-sizing: border-box;
+}
+
+.content-editor__input:focus {
+    outline: none;
+    border-color: #3498DA;
+    box-shadow: 0 0 0 3px rgba(52, 152, 218, 0.2);
+    background-color: #ffffff;
+}
+
+.content-editor__error {
+    color: #e53e3e;
+    background-color: #fff5f5;
+    padding: 14px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #fed7d7;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+.editor-container {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    background: #fff;
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e2e8f0;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.toolbar button, .toolbar-select {
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.toolbar button:hover {
+    background: #f1f5f9;
+}
+
+.toolbar button.active {
+    background: #3498DA;
+    color: white;
+    border-color: #3498DA;
+}
+
+.toolbar-select {
+    min-width: 100px;
+}
+
+.editor-content {
+    padding: 16px;
+    min-height: 50px;
+    outline: none;
+    line-height: 1.6;
+    font-size: 16px;
+}
+
+.editor-content p {
+    margin: 0 0 1em 0;
+}
+
+.content-editor__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.content-editor__button {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    min-width: 120px;
+}
+
+.content-editor__button--cancel {
+    background-color: #f1f5f9;
+    color: #64748b;
+}
+
+.content-editor__button--cancel:hover {
+    background-color: #e2e8f0;
+}
+
+.content-editor__button--submit {
+    background-color: #3498DA;
+    color: white;
+}
+
+.content-editor__button--submit:hover {
+    background-color: #2980B9;
+}

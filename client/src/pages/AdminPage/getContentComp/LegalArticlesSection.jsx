@@ -1,43 +1,50 @@
-import '../styles/LegalArticlesSection.css';
-import Card from '../Shared/Card.jsx';
-import ContentBtn from '../../../components/AdmiinNewContentBtn/ContentBtn.jsx';
+import ContentSection from '../../../hooks/useContentSection.jsx';
+import ContentEditor from '../createContentComp/ContentEditor.jsx';
 import { publicApi } from "../../../api/publicApi.js";
-import { useFetchData } from "../../../hooks/useFetchData.js";
+import { adminApi } from "../../../api/adminApi.js";
+import '../styles/LegalArticlesSection.css';
 
 const LegalArticlesSection = () => {
-    const { data: legalArticles, loading } = useFetchData(publicApi.getLegalArticle);
-
-    if (loading) return <div>Загрузка...</div>;
+    const renderLegalCard = (legalItem) => (
+        <>
+            <h3 className='news-title'>{legalItem.title}</h3>
+            <div
+                className='news-content'
+                dangerouslySetInnerHTML={{ __html: legalItem.content }}
+            />
+        </>
+    )
 
     return (
-        <div className="technical-section">
-            <ContentBtn name={'+ Добавить контент'} />
-
-
-            <div className="technical-list">
-                {legalArticles.map((item, index) => (
-                    <Card key={item.id || index}>
-                        <div className="article-item">
-                            <div className="article-header">
-                                <h3>{item.title}</h3>
-                            </div>
-                            <p className="article-excerpt">{item.content}</p>
-                            <div className="article-footer">
-                                <div className="article-meta">
-                                    <span className="article-date">
-                                        {new Date(item.createdAt).toLocaleDateString()}
-                                    </span>
-                                </div>
-                                <div className="article-actions">
-                                    <button className="btn-edit">Редактировать</button>
-                                    <button className="btn-delete">Удалить</button>
-                                </div>
-                            </div>
-                        </div>
-                    </Card>
-                ))}
-            </div>
-        </div>
+        <ContentSection
+            apiMethods={{
+                get: publicApi.getLegalArticle,
+                create: adminApi.createLegal,
+                update: adminApi.updateLegal,
+                delete: adminApi.deleteLegal
+            }}
+            formComponent={(props) => (
+                <ContentEditor
+                    {...props}
+                    apiMethods={{
+                        create: adminApi.createLegal,
+                        update: adminApi.updateLegal
+                    }}
+                    contentType="Юр статья"
+                    formTitle={props.initialData ? 'Редактировать статью' : 'Добавить статью'}
+                    titlePlaceholder="Заголовок статьи"
+                />
+            )}
+            cardContentRender={renderLegalCard}
+            addButtonText="+ Добавить статью"
+            pageTitle="Статьи"
+            emptyStateText="Статей пока нет"
+            sectionClassName="news-section"
+            listClassName="news-list"
+            footerClassName="news-footer"
+            dateClassName="news-date"
+            actionsClassName="news-actions"
+        />
     );
 };
 
