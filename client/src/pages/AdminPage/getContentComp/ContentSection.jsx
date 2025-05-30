@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useFetchData } from "../../../hooks/useFetchData.js";
 import { useDeleteData } from "../../../hooks/useDeleteData.js";
 import { publicApi } from "../../../api/publicApi.js";
-import NewsForm from '../createContentComp/NewsForm.jsx';
+import NewsForm from '../createContentComp/ContentEditor.jsx';
 import ContentBtn from "../../../components/AdmiinNewContentBtn/ContentBtn.jsx";
 import Card from '../Shared/Card.jsx';
 import ScrollPageToTop from "../../../helpers/ScrollPageToTop.js";
