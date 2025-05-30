@@ -5,10 +5,17 @@ import TextStyle from '@tiptap/extension-text-style';
 import FontFamily from '@tiptap/extension-font-family';
 import FontSize from '@tiptap/extension-font-size';
 import DOMPurify from 'dompurify';
-import { adminApi } from '../../../api/adminApi.js';
-import './NewsForm.css';
+import './ContentEditor.css';
 
-const NewsForm = ({ onSuccess, onCancel, initialData }) => {
+const ContentEditor = ({
+                           onSuccess,
+                           onCancel,
+                           initialData,
+                           apiMethods,
+                           contentType = 'content',
+                           formTitle = 'Редактирование контента',
+                           titlePlaceholder = 'Заголовок'
+                       }) => {
     const [formData, setFormData] = useState(initialData || {
         title: initialData?.title || '',
         content: initialData?.content || '',
@@ -65,20 +72,20 @@ const NewsForm = ({ onSuccess, onCancel, initialData }) => {
         try {
             const sanitizedContent = sanitizeContent(formData.content);
 
-            const newsData = {
+            const contentData = {
                 title: formData.title.trim(),
                 content: sanitizedContent
             };
 
             if (initialData?._id) {
-                await adminApi.updateNews(initialData._id, newsData);
+                await apiMethods.update(initialData._id, contentData);
             } else {
-                await adminApi.createNews(newsData);
+                await apiMethods.create(contentData);
             }
 
             onSuccess();
         } catch (err) {
-            setError(err.message || 'Ошибка при сохранении новости');
+            setError(err.message || `Ошибка при сохранении ${contentType}`);
             console.error('Ошибка:', err);
         } finally {
             setIsLoading(false);
@@ -104,26 +111,25 @@ const NewsForm = ({ onSuccess, onCancel, initialData }) => {
         { value: '24px', label: '24px' },
         { value: '26px', label: '26px' },
         { value: '28px', label: '28px' },
-
     ];
 
     return (
-        <form onSubmit={handleSubmit} className="news-form">
-            <h3 className="news-form__title">
-                {initialData ? 'Редактировать новость' : 'Добавить новость'}
+        <form onSubmit={handleSubmit} className="content-editor">
+            <h3 className="content-editor__title">
+                {initialData ? `Редактировать ${contentType}` : `Добавить ${contentType}`}
             </h3>
 
-            {error && <div className="news-form__error">{error}</div>}
+            {error && <div className="content-editor__error">{error}</div>}
 
             <input
                 type="text"
-                className="news-form__input"
+                className="content-editor__input"
                 value={formData.title}
                 onChange={(e) => setFormData(prev => ({
                     ...prev,
                     title: e.target.value
                 }))}
-                placeholder="Заголовок новости"
+                placeholder={titlePlaceholder}
                 required
             />
 
@@ -206,10 +212,10 @@ const NewsForm = ({ onSuccess, onCancel, initialData }) => {
                 />
             </div>
 
-            <div className="news-form__actions">
+            <div className="content-editor__actions">
                 <button
                     type="button"
-                    className="news-form__button news-form__button--cancel"
+                    className="content-editor__button content-editor__button--cancel"
                     onClick={onCancel}
                     disabled={isLoading}
                 >
@@ -217,7 +223,7 @@ const NewsForm = ({ onSuccess, onCancel, initialData }) => {
                 </button>
                 <button
                     type="submit"
-                    className="news-form__button news-form__button--submit"
+                    className="content-editor__button content-editor__button--submit"
                     disabled={isLoading}
                 >
                     {isLoading ? 'Сохранение...' : initialData ? 'Обновить' : 'Сохранить'}
@@ -227,4 +233,4 @@ const NewsForm = ({ onSuccess, onCancel, initialData }) => {
     );
 };
 
-export default NewsForm;
+export default ContentEditor;
