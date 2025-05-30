@@ -41,11 +41,11 @@ export const adminApi = {
     createLegal: async (newLegalData) =>
         await withAuth(() => fetchAPI('/admin/create/legal', 'POST', newLegalData, true)),
 
-    updateLegal: async (legalData, id) =>
+    updateLegal: async (id, legalData) =>
         await withAuth(() => fetchAPI(`/admin/update/legal/${id}`, 'PATCH', legalData, true)),
 
-    deleteLegal: async (legalData, id) =>
-        await withAuth(() => fetchAPI(`/admin/delete/legal/${id}`, legalData, null, true)),
+    deleteLegal: async (id) =>
+        await withAuth(() => fetchAPI(`/admin/delete/legal/${id}`, 'DELETE', null, true)),
 
 };
 
