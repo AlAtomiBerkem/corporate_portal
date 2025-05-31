@@ -1,4 +1,4 @@
-import ContentSection from '../../../hooks/useContentSection.jsx';
+import UseContentSection from '../../../hooks/useContentSection.jsx';
 import ContentEditor from '../createContentComp/ContentEditor.jsx';
 import { publicApi } from "../../../api/publicApi.js";
 import { adminApi } from "../../../api/adminApi.js";
@@ -16,7 +16,7 @@ const LegalArticlesSection = () => {
     )
 
     return (
-        <ContentSection
+        <UseContentSection
             apiMethods={{
                 get: publicApi.getLegalArticle,
                 create: adminApi.createLegal,
