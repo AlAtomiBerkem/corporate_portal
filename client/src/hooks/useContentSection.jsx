@@ -1,4 +1,5 @@
 import Card from '../pages/AdminPage/Shared/Card.jsx';
+import '../pages/AdminPage/Shared/Card.css'
 import ScrollPageToTop from "../helpers/ScrollPageToTop.js";
 import { useFetchData } from "./useFetchData.js";
 import { useDeleteData } from "./useDeleteData.js";

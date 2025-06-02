@@ -1,39 +1,75 @@
 .news-section {
-    padding: 1rem 0;
+    padding: 2rem 0;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .news-list {
     display: grid;
-    gap: 1.2rem;
+    gap: 1.5rem;
 }
 
-.news-title {
-    margin: 0 0 0.8rem 0;
-    color: #2c3e50;
-    font-size: 1.2rem;
+ .news-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #f5f7fa;
 }
 
-.news-content {
-    color: #34495e;
+.news-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    border-color: #e1e5eb;
+}
+
+ .news-title {
     margin: 0 0 1rem 0;
-    line-height: 1.5;
+    color: #1a2b49;
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.4;
 }
 
-.news-footer {
+ .news-content {
+    color: #4a5568;
+    margin: 0 0 1.25rem 0;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+ .news-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 0.8rem;
-    border-top: 1px solid #ecf0f1;
+    padding-top: 1rem;
+    border-top: 1px solid #edf2f7;
 }
 
-.news-date {
-    color: #7f8c8d;
-    font-size: 0.9rem;
+ .news-date {
+    color: #718096;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
 }
 
-.news-actions {
+ .news-actions {
     display: flex;
-    gap: 0.8rem;
+    gap: 1rem;
 }
 
+.news-actions button {
+    background: none;
+    border: none;
+    color: #4c6fff;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+.news-actions button:hover {
+    color: #3a56e8;
+    background: #f0f4ff;
+}

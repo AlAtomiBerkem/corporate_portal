@@ -1,8 +1,9 @@
 import UseContentSection from '../../../hooks/useContentSection.jsx';
-import ContentEditor from '../createContentComp/ContentEditor.jsx'; // <- обратите внимание на переименование файла
+import ContentEditor from '../createContentComp/ContentEditor.jsx';
 import { publicApi } from "../../../api/publicApi.js";
 import { adminApi } from "../../../api/adminApi.js";
 import '../styles/NewsSection.css';
+import '../Shared/Card.css'
 
 const NewsSection = () => {
     const renderNewsCard = (newsItem) => (

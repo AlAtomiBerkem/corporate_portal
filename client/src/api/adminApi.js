@@ -13,16 +13,10 @@ export const adminApi = {
 
     uploadDocument: async (file, title) => {
         const formData = new FormData();
-        formData.append('document', file);
         formData.append('title', title);
+        formData.append('document', file);
 
-        return await withAuth(() => fetch('/admin/docs', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        }).then(res => res.json()));
+        return await withAuth(() => fetchAPI(`/admin/docs`, 'POST', formData, true));
     },
 
     deleteDocument: async (id) =>
