@@ -8,7 +8,7 @@ const fs = require('fs'); // Добавляем импорт модуля fs
 
 const DOCUMENTS_DIR = path.join(__dirname, '/documents');
 const META_FILE = path.join(DOCUMENTS_DIR, '_metadata.json');
-
+console.log(DOCUMENTS_DIR)
 class PublicController {
     async publicContent(req, res) {
         try {
