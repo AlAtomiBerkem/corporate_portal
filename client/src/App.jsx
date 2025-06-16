@@ -8,6 +8,8 @@ import PageLogin from "./pages/PageLogin/PageLogin.jsx";
 import AdminPage from "./pages/AdminPage/AdminPage.jsx";
 import Documents from "./components/Documents/Documents.jsx";
 import PrivateRoute from './helpers/PrivateRoute.jsx'
+import NewsList from "./components/NewsList/NewsList.jsx";
+import NewsDetail from "./components/NewsDitail/NewsDitail.jsx";
 function App() {
     return (
         <BrowserRouter>
@@ -23,6 +25,10 @@ function App() {
                 } />
                 <Route path="/documents" element={<Documents />} />
                 <Route path="*" element={<PageNotFound />} />
+
+                <Route path="/news" element={<NewsList />} />
+                <Route path="/news/:id" element={<NewsDetail />} />
+                {/*<Route path="/" element={<Navigate to="/news" replace />} />*/}
             </Routes>
         </BrowserRouter>
     )
