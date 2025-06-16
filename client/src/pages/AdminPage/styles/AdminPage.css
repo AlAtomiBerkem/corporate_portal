@@ -17,7 +17,6 @@
     padding: 2rem;
 }
 
-/* Кнопки (общие стили) */
 button {
     cursor: pointer;
     transition: all 0.2s;
@@ -39,7 +38,11 @@ button {
     border-radius: 4px;
 }
 
-/* Адаптивность */
+.news-footer {
+    padding-bottom: 10px;
+    justify-content: center;
+}
+
 @media (max-width: 768px) {
     .admin-page {
         padding: 1rem;
@@ -53,5 +56,6 @@ button {
         flex-direction: column;
         gap: 0.5rem;
         align-items: flex-start;
+        justify-content: center;
     }
 }

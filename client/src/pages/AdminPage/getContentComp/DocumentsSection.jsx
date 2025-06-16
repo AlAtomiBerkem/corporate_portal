@@ -18,6 +18,9 @@ const DocumentsSection = () => {
         fetchDocuments();
     }, []);
 
+
+    // тут отображаем документы
+
     const fetchDocuments = async () => {
         try {
             setLoading(true);
@@ -31,6 +34,9 @@ const DocumentsSection = () => {
             setLoading(false);
         }
     };
+
+
+
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -71,6 +77,9 @@ const DocumentsSection = () => {
         }
     };
 
+
+
+
     const handleDownload = async (fileName, originalName) => {
         try {
             // Удаляем лишние слеши и кодируем имя файла
@@ -95,6 +104,9 @@ const DocumentsSection = () => {
             alert('Не удалось скачать файл. Попробуйте позже.');
         }
     };
+
+
+
     const handleDeleteDocument = async (id) => {
         if (!confirm('Вы уверены, что хотите удалить этот документ?')) return;
 
