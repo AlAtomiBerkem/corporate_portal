@@ -22,7 +22,9 @@ const DocumentsSection = () => {
         try {
             setLoading(true);
             const response = await publicApi.getDocuments();
-            setDocuments(response?.documents || []);
+            // Обрабатываем ответ сервера в обоих форматах
+            const docs = Array.isArray(response) ? response : (response?.documents || []);
+            setDocuments(docs);
         } catch (error) {
             console.error('Ошибка загрузки документов:', error);
         } finally {
@@ -69,6 +71,30 @@ const DocumentsSection = () => {
         }
     };
 
+    const handleDownload = async (fileName, originalName) => {
+        try {
+            // Удаляем лишние слеши и кодируем имя файла
+            const cleanFileName = encodeURIComponent(
+                fileName.replace(/^\/+/, '')
+            );
+
+            const downloadUrl = `/dock/${cleanFileName}`;
+
+            // Создаем скрытую ссылку
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = originalName ||
+                fileName.split('/').pop() ||
+                'document.pdf';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error('Download failed:', error);
+            alert('Не удалось скачать файл. Попробуйте позже.');
+        }
+    };
     const handleDeleteDocument = async (id) => {
         if (!confirm('Вы уверены, что хотите удалить этот документ?')) return;
 
@@ -185,13 +211,13 @@ const DocumentsSection = () => {
                                 <td className="document-original-name">{item.originalName}</td>
                                 <td className="document-date">{formatDate(item.uploadedAt)}</td>
                                 <td className="document-actions">
-                                    <a
-                                        href={item.url}
-                                        download={item.originalName}
+                                    <button
                                         className="btn btn-download"
+                                        onClick={() => handleDownload(item.url, item.originalName)}
+                                        disabled={loading}
                                     >
                                         Скачать
-                                    </a>
+                                    </button>
                                     <button
                                         className="btn btn-delete"
                                         onClick={() => handleDeleteDocument(item.id)}
