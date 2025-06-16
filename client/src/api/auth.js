@@ -2,7 +2,7 @@ import { refreshToken } from '../helpers/Auth.js'
 
 const baseUrl = 'http://localhost:5000';
 
-export async function fetchAPI(endpoint, method = 'GET', body = null, needAuth = false) {
+export async function fetchAPI(endpoint, method = 'GET', body = null, needAuth = false, isFileDownload = false) {
     const headers = {};
 
     if (body && !(body instanceof FormData)) {
@@ -46,7 +46,38 @@ export async function fetchAPI(endpoint, method = 'GET', body = null, needAuth =
         throw new Error(errorData.message || 'Request failed');
     }
 
+    // Для скачивания файлов возвращаем blob
+    if (isFileDownload) {
+        return response.blob();
+    }
+
+    // Для обычных запросов возвращаем JSON
     return response.json();
+}
+
+export async function downloadFile(endpoint, filename, needAuth = false) {
+    try {
+        const blob = await fetchAPI(endpoint, 'GET', null, needAuth, true);
+
+        // Создаем ссылку для скачивания
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+
+        // Очистка
+        setTimeout(() => {
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        }, 100);
+
+        return true;
+    } catch (error) {
+        console.error('Download error:', error);
+        throw error;
+    }
 }
 
 export function isAuthenticated() {
