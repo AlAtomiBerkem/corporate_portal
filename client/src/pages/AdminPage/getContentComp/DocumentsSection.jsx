@@ -18,9 +18,6 @@ const DocumentsSection = () => {
         fetchDocuments();
     }, []);
 
-
-    // тут отображаем документы
-
     const fetchDocuments = async () => {
         try {
             setLoading(true);
@@ -34,9 +31,6 @@ const DocumentsSection = () => {
             setLoading(false);
         }
     };
-
-
-
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -77,35 +71,34 @@ const DocumentsSection = () => {
         }
     };
 
-
-
-
     const handleDownload = async (fileName, originalName) => {
         try {
-            // Удаляем лишние слеши и кодируем имя файла
-            const cleanFileName = encodeURIComponent(
-                fileName.replace(/^\/+/, '')
-            );
+            setLoading(true);
+            const response = await publicApi.getLoadingDocuments(fileName);
 
-            const downloadUrl = `/dock/${cleanFileName}`;
+            if (!response.ok) {
+                throw new Error('Файл не найден или ошибка сервера');
+            }
 
-            // Создаем скрытую ссылку
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
-            link.href = downloadUrl;
-            link.download = originalName ||
-                fileName.split('/').pop() ||
-                'document.pdf';
-
+            link.href = url;
+            link.setAttribute('download', originalName || fileName); // если originalName не указан, используем fileName
             document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
+
+            setTimeout(() => {
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            }, 100);
         } catch (error) {
-            console.error('Download failed:', error);
-            alert('Не удалось скачать файл. Попробуйте позже.');
+            console.error('Ошибка скачивания:', error);
+            alert('Не удалось скачать документ: ' + error.message);
+        } finally {
+            setLoading(false);
         }
     };
-
-
 
     const handleDeleteDocument = async (id) => {
         if (!confirm('Вы уверены, что хотите удалить этот документ?')) return;

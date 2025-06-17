@@ -1,125 +1,197 @@
-.block {
-    width: 100%;
-    padding: 80px 0;
-    display: flex;
-    justify-content: center; /* Текст справа */
-    background-size: cover;
-    background-position: center;
+.page-content {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
 }
 
-.block .container {
-    width: 50%;
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+.articles-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
 }
 
-.block h2 {
-    font-size: 2.5rem;
-    color: #035F8F;
-    margin-bottom: 20px;
-    font-family: 'Playfair Display', serif;
+.articles-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.articles-header h1 {
+    font-size: 2.8rem;
+    color: #025178;
+    margin-bottom: 15px;
     font-weight: 700;
 }
 
-.block h3 {
+.articles-header p {
+    font-size: 1.2rem;
+    color: #6c757d;
+}
+
+.articles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.article-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.article-card.expanded {
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+}
+
+.article-header {
+    padding: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    transition: background 0.3s ease;
+}
+
+.article-header:hover {
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+}
+
+.article-header h2 {
     font-size: 1.5rem;
     color: #025178;
-    margin-bottom: 10px;
-    font-family: 'Varela Round', sans-serif;
+    margin: 0;
     font-weight: 600;
 }
 
-.block p {
-    font-size: 1.1rem;
-    color: #333;
+.toggle-icon {
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: #025178;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.article-content {
+    padding: 25px;
+}
+
+.article-image {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 6px;
     margin-bottom: 20px;
-    line-height: 1.6;
 }
 
-.block ul {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 20px;
+.article-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    font-size: 0.9rem;
+    color: #6c757d;
 }
 
-.block ul li {
-    padding-left: 30px;
-    margin-bottom: 10px;
-    font-size: 1rem;
-    color: #333;
-    line-height: 1.6;
+.article-date {
+    display: flex;
+    align-items: center;
 }
 
-.block button {
-    background-color: #035F8F;
+.article-category {
+    background: #e6f7ff;
+    color: #0077b6;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.loading-container,
+.error-container {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.loading-spinner {
+    border: 5px solid rgba(2, 81, 120, 0.1);
+    border-top: 5px solid #025178;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+.error-container button {
+    background: #025178;
     color: white;
     border: none;
     padding: 10px 20px;
-    font-size: 1rem;
+    border-radius: 6px;
     cursor: pointer;
-    border-radius: 10px;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    margin-top: 20px;
+    transition: background 0.3s ease;
 }
 
-.block button:hover {
-    background-color: #025178;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+.error-container button:hover {
+    background: #03405e;
 }
 
-.block button:active {
-    background-color: #024160;
-    transform: translateY(0);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-/* Цвета для блоков */
-.gas-connection {
-    background-color: #f0f8ff;
-}
+/* Адаптивность */
+@media (max-width: 992px) {
+    .articles-header h1 {
+        font-size: 2.2rem;
+    }
 
-.individuals {
-    background-color: #e6f7ff;
-}
-
-.legal-entities {
-    background-color: #f0f8ff;
-}
-
-@media (max-width: 1200px) {
-    .block .container {
-        width: 100%;
+    .article-header h2 {
+        font-size: 1.3rem;
     }
 }
 
 @media (max-width: 768px) {
-    .block {
-        justify-content: center;
+    .articles-container {
+        padding: 30px 15px;
     }
 
-    .block .container {
-        width: 90%;
-        padding: 20px;
-    }
-
-    .block h2 {
+    .articles-header h1 {
         font-size: 2rem;
     }
 
-    .block h3 {
-        font-size: 1.3rem;
+    .article-header {
+        padding: 20px;
     }
 
-    .block p {
-        font-size: 1rem;
+    .article-content {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .articles-header h1 {
+        font-size: 1.8rem;
     }
 
-    .block button {
-        font-size: 0.9rem;
-        padding: 8px 16px;
+    .article-header h2 {
+        font-size: 1.1rem;
+    }
+
+    .toggle-icon {
+        width: 25px;
+        height: 25px;
+        font-size: 1.5rem;
     }
 }

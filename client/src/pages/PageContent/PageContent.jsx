@@ -1,76 +1,111 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import AppHeader from "../../components/AppHeader/AppHeader.jsx";
 import AppNavbar from "../../components/AppNavbar/AppNavbar.jsx";
 import AppFooter from "../../components/AppFooter/AppFooter.jsx";
-
-import './PageContentStyle.css'
+import { publicApi } from '../../api/publicApi.js';
+import './PageContentStyle.css';
 
 const PageContent = () => {
+    const [articles, setArticles] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [expandedArticleId, setExpandedArticleId] = useState(null);
+
+    useEffect(() => {
+        const fetchArticles = async () => {
+            try {
+                const response = await publicApi.getContent();
+                const articlesData = response?.data || [];
+                setArticles(Array.isArray(articlesData) ? articlesData : []);
+                setLoading(false);
+            } catch (err) {
+                setError(err.message || 'Не удалось загрузить статьи');
+                setLoading(false);
+                console.error('Ошибка при загрузке статей:', err);
+            }
+        };
+
+        fetchArticles();
+    }, []);
+
+    const toggleArticle = (id) => {
+        setExpandedArticleId(expandedArticleId === id ? null : id);
+    };
+
+    if (loading) {
+        return (
+            <div className="loading-container">
+                <div className="loading-spinner"></div>
+                <p>Загрузка статей...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="error-container">
+                <p>{error}</p>
+                <button onClick={() => window.location.reload()}>Попробовать снова</button>
+            </div>
+        );
+    }
+
     return (
-        <div>
+        <div className="page-content">
             <AppHeader />
             <AppNavbar />
-            <div className="block gas-connection">
-                <div className="container">
-                    <div className="content">
-                        <h2 id="podcluchenie" >Подключение газа</h2>
-                        <p>
-                            Подключение газа — это важный шаг к комфорту и экономии. Мы предлагаем полный комплекс услуг по газификации вашего дома, дачи или предприятия.
-                            Наши специалисты проведут все необходимые работы: от проектирования до пуска газа в эксплуатацию.
-                            Гарантируем качество, безопасность и соблюдение всех нормативов. Оставьте заявку, и мы бесплатно проконсультируем вас по всем вопросам!
-                        </p>
-                        <ul>
-                            <li>Проектирование и согласование</li>
-                            <li>Монтаж газового оборудования</li>
-                            <li>Пуско-наладочные работы</li>
-                            <li>Техническое обслуживание</li>
-                        </ul>
-                        <button>Оставить заявку</button>
-                    </div>
+
+            <div className="articles-container">
+                <div className="articles-header">
+                    <h1>Полезные статьи и материалы</h1>
+                    <p>Актуальная информация о подключении и использовании газа</p>
+                </div>
+
+                <div className="articles-list">
+                    {articles.map((article) => (
+                        <div
+                            key={article._id}
+                            className={`article-card ${expandedArticleId === article._id ? 'expanded' : ''}`}
+                        >
+                            <div
+                                className="article-header"
+                                onClick={() => toggleArticle(article._id)}
+                            >
+                                <h2>{article.title}</h2>
+                                <span className="toggle-icon">
+                                    {expandedArticleId === article._id ? '−' : '+'}
+                                </span>
+                            </div>
+
+                            {expandedArticleId === article._id && (
+                                <div className="article-content">
+                                    {article.imageUrl && (
+                                        <img
+                                            src={article.imageUrl}
+                                            alt={article.title}
+                                            className="article-image"
+                                        />
+                                    )}
+                                    <div dangerouslySetInnerHTML={{ __html: article.content }} />
+                                    <div className="article-meta">
+                                        <span className="article-date">
+                                            {new Date(article.createdAt).toLocaleDateString('ru-RU', {
+                                                day: 'numeric',
+                                                month: 'long',
+                                                year: 'numeric'
+                                            })}
+                                        </span>
+                                        {article.category && (
+                                            <span className="article-category">{article.category}</span>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ))}
                 </div>
             </div>
 
-            <div className="block individuals">
-                <div className="container">
-                    <div className="content">
-                        <h3 id="urlitsa">Физические лица</h3>
-                        <h2>Услуги для физических лиц</h2>
-                        <p>
-                            Мы заботимся о вашем комфорте и безопасности! Для частных клиентов мы предлагаем широкий спектр услуг по газификации и обслуживанию газового оборудования.
-                            Независимо от того, нужно ли вам подключить газ к дому, установить газовый котел или провести техническое обслуживание, — наши специалисты готовы помочь.
-                            Работаем быстро, качественно и с гарантией!
-                        </p>
-                        <ul>
-                            <li>Подключение газа к частному дому</li>
-                            <li>Установка газовых котлов и плит</li>
-                            <li>Ремонт и обслуживание газового оборудования</li>
-                            <li>Консультации по безопасной эксплуатации</li>
-                        </ul>
-                        <button>Узнать подробнее</button>
-                    </div>
-                </div>
-            </div>
-
-            <div className="block legal-entities">
-                <div className="container">
-                    <div className="content">
-                        <h3>Юридические лица</h3>
-                        <h2>Услуги для юридических лиц</h2>
-                        <p>
-                            Для предприятий и организаций мы предлагаем профессиональные услуги по газификации и обслуживанию газового оборудования.
-                            Наши решения помогут вам оптимизировать затраты на энергоресурсы и обеспечить бесперебойную работу вашего бизнеса.
-                            Мы работаем с объектами любой сложности: от небольших кафе до крупных производственных комплексов.
-                        </p>
-                        <ul>
-                            <li>Проектирование и монтаж газовых систем</li>
-                            <li>Пуско-наладочные работы</li>
-                            <li>Техническое обслуживание и ремонт</li>
-                            <li>Аудит газового оборудования</li>
-                        </ul>
-                        <button>Связаться с нами</button>
-                    </div>
-                </div>
-            </div>
             <AppFooter />
         </div>
     );
