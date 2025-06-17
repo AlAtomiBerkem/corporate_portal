@@ -26,7 +26,7 @@ const AppContactInfo = () => {
                             <div className="contact__item-icon"><img src={ContactTarget} alt=""/>
                             </div>
                             <div className="contact__item-text">Адрес</div>
-                            <div className="contact__item-valuer">г.Казань, тер. Химград, д.41, офис 4</div>
+                            <div className="contact__item-valuer">Республика Татарстан, г.Казань, ул. Мусина, 33, "Бизнес & центр " здание ТЦ "Парк Хаус", оф.201</div>
                         </div>
                     </div>
                 </div>
