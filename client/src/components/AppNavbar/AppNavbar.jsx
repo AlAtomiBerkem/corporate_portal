@@ -34,7 +34,7 @@ const AppNavbar = () => {
                         <Link to="/#maintenanceAncor" className="navigate__link">Техническое обслуживание</Link>
                     </li>
                     <li className="navigate__item">
-                        <Link to="/PageContent" className="navigate__link">Юридическим лицам</Link>
+                        <Link to="/PageLegal" className="navigate__link">Юридическим лицам</Link>
                     </li>
                     <li className="navigate__item">
                         <Link to="/documents" className="navigate__link">Прилагающиеся документы</Link>

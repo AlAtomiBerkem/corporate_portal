@@ -12,8 +12,7 @@ const NewsList = () => {
         const fetchNews = async () => {
             try {
                 const response = await publicApi.getNews();
-                // Проверяем наличие data в ответе и что это массив
-                const newsData = response?.data || [];
+                 const newsData = response?.data || [];
                 setNews(Array.isArray(newsData) ? newsData : []);
                 setLoading(false);
             } catch (err) {
@@ -65,8 +64,9 @@ const NewsList = () => {
     };
 
     return (
+        <div className='wrap'>
         <div className="news-container">
-            <h2 className="news-title">Новости компании</h2>
+            <h2 className="news-name">Новости компании</h2>
             <div className="news-grid">
                 {news.map((item) => (
                     <article key={item._id} className="news-card">
@@ -93,6 +93,7 @@ const NewsList = () => {
                     </article>
                 ))}
             </div>
+        </div>
         </div>
     );
 };
