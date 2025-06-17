@@ -15,7 +15,11 @@ const PageLegal = () => {
             try {
                 const response = await publicApi.getLegalArticle();
                 const LegalArticleData = response?.data || [];
-                setArticles(Array.isArray(LegalArticleData) ? LegalArticleData : []);
+                const sortedArticles = Array.isArray(LegalArticleData)
+                    ? [...LegalArticleData].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                    : [];
+
+                setArticles(sortedArticles);
                 setLoading(false);
             } catch (err) {
                 setError(err.message || 'Не удалось загрузить статьи');
@@ -26,6 +30,7 @@ const PageLegal = () => {
 
         fetchArticles();
     }, []);
+
 
     if (loading) {
         return (

@@ -16,7 +16,11 @@ const PageContent = () => {
             try {
                 const response = await publicApi.getContent();
                 const articlesData = response?.data || [];
-                setArticles(Array.isArray(articlesData) ? articlesData : []);
+                const sortedArticles = Array.isArray(articlesData)
+                    ? [...articlesData].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                    : [];
+
+                setArticles(sortedArticles);
                 setLoading(false);
             } catch (err) {
                 setError(err.message || 'Не удалось загрузить статьи');
