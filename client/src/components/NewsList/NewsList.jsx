@@ -14,8 +14,13 @@ const NewsList = ({ content }) => {
         const fetchNews = async () => {
             try {
                 const response = await publicApi.getNews();
-                 const newsData = response?.data || [];
-                setNews(Array.isArray(newsData) ? newsData : []);
+                const newsData = response?.data || [];
+
+                const sortedNews = Array.isArray(newsData)
+                    ? [...newsData].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                    : [];
+
+                setNews(sortedNews);
                 setLoading(false);
             } catch (err) {
                 setError(err.message || 'Не удалось загрузить новости');
