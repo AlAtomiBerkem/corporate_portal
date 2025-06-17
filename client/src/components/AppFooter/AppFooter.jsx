@@ -12,7 +12,7 @@ const AppFooter = () => {
                         <div className="footer_content-company_name">Инженерные решения</div>
                         <div className="footer_content-contacts">
                             <ul>
-                                <li><strong>адрес:</strong> 420006, Татарстан, г.Казань, тер. Химград, д.41, офис 4</li>
+                                <li><strong>адрес:</strong> 420006, г.Казань, ул. Мусина, 33, "Бизнес & центр " здание ТЦ "Парк Хаус", оф.201</li>
                                 <li><strong>почта:</strong> ir-kazan@mail.ru</li>
                                 <li><strong>телефон:</strong> +7(986) 907-18-00</li>
                                 <li><strong>режим работы:</strong> 9:00 - 21:00 с пн по сб</li>
