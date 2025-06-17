@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import TextStyle from '@tiptap/extension-text-style';
-import FontFamily from '@tiptap/extension-font-family';
-import FontSize from '@tiptap/extension-font-size';
+import { useState, useCallback } from 'react';
+import { Editor, EditorState, RichUtils, Modifier, convertToRaw, convertFromRaw } from 'draft-js';
 import DOMPurify from 'dompurify';
+import { stateToHTML } from 'draft-js-export-html';
+
+import 'draft-js/dist/Draft.css';
 import './ContentEditor.css';
 
 const ContentEditor = ({
@@ -22,59 +21,191 @@ const ContentEditor = ({
         fontFamily: 'Arial',
         fontSize: '16px'
     });
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
 
-    const editor = useEditor({
-        extensions: [
-            StarterKit,
-            TextStyle,
-            FontFamily.configure({ types: ['textStyle'] }),
-            FontSize,
-        ],
-        content: formData.content,
-        onUpdate: ({ editor }) => {
-            setFormData(prev => ({
-                ...prev,
-                content: editor.getHTML()
-            }));
-        },
+    const [editorState, setEditorState] = useState(() => {
+        if (initialData?.content) {
+            try {
+                const contentState = convertFromRaw(JSON.parse(initialData.content));
+                return EditorState.createWithContent(contentState);
+            } catch (e) {
+                console.error('Error parsing content:', e);
+            }
+        }
+        return EditorState.createEmpty();
     });
 
-    useEffect(() => {
-        if (editor && initialData?.content) {
-            editor.commands.setContent(initialData.content);
-        }
-    }, [editor, initialData]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [showLinkInput, setShowLinkInput] = useState(false);
+    const [linkUrl, setLinkUrl] = useState('');
 
-    useEffect(() => {
-        if (editor) {
-            editor.chain().focus()
-                .setFontFamily(formData.fontFamily)
-                .setFontSize(formData.fontSize)
-                .run();
-        }
-    }, [formData.fontFamily, formData.fontSize, editor]);
+    // Обработка изменений редактора
+    const handleEditorChange = (newEditorState) => {
+        setEditorState(newEditorState);
+        const contentState = newEditorState.getCurrentContent();
+        const rawContent = convertToRaw(contentState);
+        setFormData(prev => ({
+            ...prev,
+            content: JSON.stringify(rawContent)
+        }));
+    };
 
-    const sanitizeContent = (html) => {
-        return DOMPurify.sanitize(html, {
-            ALLOWED_TAGS: ['p', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'br', 'span'],
-            ALLOWED_ATTR: ['style'],
-            ALLOW_STYLE: true
-        });
+    // Применение стилей
+    const applyStyle = (style) => {
+        handleEditorChange(RichUtils.toggleInlineStyle(editorState, style));
+    };
+
+    // Применение блочных стилей
+    const applyBlockType = (blockType) => {
+        handleEditorChange(RichUtils.toggleBlockType(editorState, blockType));
+    };
+
+    // Добавление ссылки
+    const confirmLink = useCallback(() => {
+        const selection = editorState.getSelection();
+        if (!selection.isCollapsed()) {
+            const contentState = editorState.getCurrentContent();
+            const contentStateWithEntity = contentState.createEntity(
+                'LINK',
+                'MUTABLE',
+                { url: linkUrl }
+            );
+            const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+            const newEditorState = EditorState.set(
+                editorState,
+                { currentContent: contentStateWithEntity }
+            );
+
+            handleEditorChange(
+                RichUtils.toggleLink(
+                    newEditorState,
+                    newEditorState.getSelection(),
+                    entityKey
+                )
+            );
+        }
+        setShowLinkInput(false);
+        setLinkUrl('');
+    }, [editorState, linkUrl]);
+
+    const removeLink = useCallback(() => {
+        const selection = editorState.getSelection();
+        if (!selection.isCollapsed()) {
+            handleEditorChange(RichUtils.toggleLink(editorState, selection, null));
+        }
+    }, [editorState]);
+
+    const insertImage = (url) => {
+        const contentState = editorState.getCurrentContent();
+        const contentStateWithEntity = contentState.createEntity(
+            'IMAGE',
+            'IMMUTABLE',
+            { src: url }
+        );
+        const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+        const newEditorState = EditorState.set(
+            editorState,
+            { currentContent: contentStateWithEntity }
+        );
+
+        const newContentState = Modifier.insertText(
+            newEditorState.getCurrentContent(),
+            newEditorState.getSelection(),
+            ' ',
+            null,
+            entityKey
+        );
+
+        handleEditorChange(
+            EditorState.push(
+                newEditorState,
+                newContentState,
+                'insert-fragment'
+            )
+        );
+    };
+
+    // Обработчик загрузки файлов
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Здесь должна быть логика загрузки на сервер
+        // Для примера используем временную ссылку
+        const fileType = file.type.split('/')[0];
+        const url = URL.createObjectURL(file);
+
+        if (fileType === 'image') {
+            insertImage(url);
+        } else {
+            // Для других файлов можно добавить ссылку на скачивание
+            const selection = editorState.getSelection();
+            const contentState = editorState.getCurrentContent();
+
+            const contentStateWithEntity = contentState.createEntity(
+                'LINK',
+                'MUTABLE',
+                { url: url }
+            );
+            const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+
+            const newContentState = Modifier.replaceText(
+                contentState,
+                selection,
+                file.name,
+                null,
+                entityKey
+            );
+
+            handleEditorChange(
+                EditorState.push(
+                    editorState,
+                    newContentState,
+                    'insert-characters'
+                )
+            );
+        }
+    };
+
+    // Кастомный рендеринг для изображений и ссылок
+    const mediaBlockRenderer = (block) => {
+        if (block.getType() === 'atomic') {
+            const contentState = editorState.getCurrentContent();
+            const entity = block.getEntityAt(0);
+            if (!entity) return null;
+
+            const entityType = contentState.getEntity(entity).getType();
+            const data = contentState.getEntity(entity).getData();
+
+            if (entityType === 'IMAGE') {
+                return {
+                    component: () => <img src={data.src} alt="" style={{ maxWidth: '100%' }} />,
+                    editable: false,
+                };
+            }
+        }
+        return null;
+    };
+
+    // Очистка контента перед сохранением
+    const sanitizeContent = (content) => {
+        // Здесь можно добавить дополнительную очистку
+        return content;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-        setError(null);
 
         try {
-            const sanitizedContent = sanitizeContent(formData.content);
+            // Конвертируем контент редактора в HTML
+            const contentState = editorState.getCurrentContent();
+            const htmlContent = stateToHTML(contentState);
 
+            // Отправляем на сервер HTML, а не JSON
             const contentData = {
                 title: formData.title.trim(),
-                content: sanitizedContent
+                content: htmlContent, // Теперь здесь HTML, а не JSON
             };
 
             if (initialData?._id) {
@@ -83,10 +214,9 @@ const ContentEditor = ({
                 await apiMethods.create(contentData);
             }
 
-            onSuccess();
+            onSuccess(); // Закрываем редактор или обновляем список
         } catch (err) {
             setError(err.message || `Ошибка при сохранении ${contentType}`);
-            console.error('Ошибка:', err);
         } finally {
             setIsLoading(false);
         }
@@ -112,6 +242,19 @@ const ContentEditor = ({
         { value: '26px', label: '26px' },
         { value: '28px', label: '28px' },
     ];
+
+    // Проверка активных стилей для кнопок
+    const hasInlineStyle = (style) => {
+        const currentStyle = editorState.getCurrentInlineStyle();
+        return currentStyle.has(style);
+    };
+
+    const hasBlockType = (blockType) => {
+        const selection = editorState.getSelection();
+        const contentState = editorState.getCurrentContent();
+        const block = contentState.getBlockForKey(selection.getStartKey());
+        return block.getType() === blockType;
+    };
 
     return (
         <form onSubmit={handleSubmit} className="content-editor">
@@ -167,49 +310,84 @@ const ContentEditor = ({
 
                     <button
                         type="button"
-                        onClick={() => editor.chain().focus().toggleBold().run()}
-                        className={editor?.isActive('bold') ? 'active' : ''}
+                        onClick={() => applyStyle('BOLD')}
+                        className={hasInlineStyle('BOLD') ? 'active' : ''}
                     >
                         <strong>B</strong>
                     </button>
 
                     <button
                         type="button"
-                        onClick={() => editor.chain().focus().toggleItalic().run()}
-                        className={editor?.isActive('italic') ? 'active' : ''}
+                        onClick={() => applyStyle('ITALIC')}
+                        className={hasInlineStyle('ITALIC') ? 'active' : ''}
                     >
                         <em>I</em>
                     </button>
 
                     <button
                         type="button"
-                        onClick={() => editor.chain().focus().toggleUnderline().run()}
-                        className={editor?.isActive('underline') ? 'active' : ''}
+                        onClick={() => applyStyle('UNDERLINE')}
+                        className={hasInlineStyle('UNDERLINE') ? 'active' : ''}
                     >
                         <u>U</u>
                     </button>
 
                     <button
                         type="button"
-                        onClick={() => editor.chain().focus().toggleBulletList().run()}
-                        className={editor?.isActive('bulletList') ? 'active' : ''}
+                        onClick={() => applyBlockType('unordered-list-item')}
+                        className={hasBlockType('unordered-list-item') ? 'active' : ''}
                     >
                         • Список
                     </button>
 
                     <button
                         type="button"
-                        onClick={() => editor.chain().focus().toggleOrderedList().run()}
-                        className={editor?.isActive('orderedList') ? 'active' : ''}
+                        onClick={() => applyBlockType('ordered-list-item')}
+                        className={hasBlockType('ordered-list-item') ? 'active' : ''}
                     >
                         1. Список
                     </button>
+
+                    <button
+                        type="button"
+                        onClick={() => setShowLinkInput(true)}
+                        className={showLinkInput ? 'active' : ''}
+                    >
+                        Ссылка
+                    </button>
+
+                    {showLinkInput && (
+                        <div className="link-input">
+                            <input
+                                type="text"
+                                value={linkUrl}
+                                onChange={(e) => setLinkUrl(e.target.value)}
+                                placeholder="Введите URL"
+                            />
+                            <button type="button" onClick={confirmLink}>Применить</button>
+                            <button type="button" onClick={() => setShowLinkInput(false)}>Отмена</button>
+                        </div>
+                    )}
+
+                    <label className="file-upload-button">
+                        <input
+                            type="file"
+                            onChange={handleFileUpload}
+                            style={{ display: 'none' }}
+                            accept="image/*,.pdf,.doc,.docx"
+                        />
+                        📎 Файл
+                    </label>
                 </div>
 
-                <EditorContent
-                    editor={editor}
-                    className="editor-content"
-                />
+                <div className="editor-content">
+                    <Editor
+                        editorState={editorState}
+                        onChange={handleEditorChange}
+                        blockRendererFn={mediaBlockRenderer}
+                        placeholder="Начните вводить текст..."
+                    />
+                </div>
             </div>
 
             <div className="content-editor__actions">
