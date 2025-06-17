@@ -3,7 +3,9 @@ import { publicApi } from '../../api/publicApi.js';
 import { Link } from 'react-router-dom';
 import './NewsList.css';
 
-const NewsList = () => {
+const NewsList = ({ content }) => {
+
+
     const [news, setNews] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -63,37 +65,41 @@ const NewsList = () => {
         return plainText.substring(0, length) + (plainText.length > length ? '...' : '');
     };
 
+
+
     return (
+
         <div className='wrap'>
-        <div className="news-container">
-            <h2 className="news-name">Новости компании</h2>
-            <div className="news-grid">
-                {news.map((item) => (
-                    <article key={item._id} className="news-card">
-                        <div className="news-content">
-                            <div className="news-meta">
-                                <time className="news-date" dateTime={item.createdAt}>
-                                    {new Date(item.createdAt).toLocaleDateString('ru-RU', {
-                                        day: 'numeric',
-                                        month: 'long',
-                                        year: 'numeric'
-                                    })}
-                                </time>
+            <div dangerouslySetInnerHTML={{__html: content}}/>
+            <div className="news-container">
+                <h2 className="news-name">Новости компании</h2>
+                <div className="news-grid">
+                    {news.map((item) => (
+                        <article key={item._id} className="news-card">
+                            <div className="news-content">
+                                <div className="news-meta">
+                                    <time className="news-date" dateTime={item.createdAt}>
+                                        {new Date(item.createdAt).toLocaleDateString('ru-RU', {
+                                            day: 'numeric',
+                                            month: 'long',
+                                            year: 'numeric'
+                                        })}
+                                    </time>
+                                </div>
+                                <h3 className="news-item-title">{item.title || 'Без названия'}</h3>
+                                <p className="news-excerpt">
+                                    {createExcerpt(item.content)}
+                                </p>
+                                <div className="news-footer">
+                                    <Link to={`/news/${item._id}`} className="news-read-more">
+                                        Читать далее
+                                    </Link>
+                                </div>
                             </div>
-                            <h3 className="news-item-title">{item.title || 'Без названия'}</h3>
-                            <p className="news-excerpt">
-                                {createExcerpt(item.content)}
-                            </p>
-                            <div className="news-footer">
-                                <Link to={`/news/${item._id}`} className="news-read-more">
-                                    Читать далее
-                                </Link>
-                            </div>
-                        </div>
-                    </article>
-                ))}
+                        </article>
+                    ))}
+                </div>
             </div>
-        </div>
         </div>
     );
 };
