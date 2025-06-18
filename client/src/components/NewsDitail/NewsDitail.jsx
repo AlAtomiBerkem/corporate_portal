@@ -1,14 +1,13 @@
-import {useEffect, useState} from 'react';
-import {useParams, Link} from "react-router-dom";
-import {publicApi} from "../../api/publicApi.js";
+import { useEffect, useState } from 'react';
+import { useParams, Link } from "react-router-dom";
+import { publicApi } from "../../api/publicApi.js";
 import AppHeader from "../../components/AppHeader/AppHeader.jsx";
 import AppNavbar from "../../components/AppNavbar/AppNavbar.jsx";
 import AppFooter from "../../components/AppFooter/AppFooter.jsx";
+import './NewsDitail.css'
 
-
-const NewsDitail = () => {
-
-    const {id} = useParams();
+const NewsDetail = () => {
+    const { id } = useParams();
     const [newsItem, setNewsItem] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -46,31 +45,33 @@ const NewsDitail = () => {
     if (!newsItem) return <div>Новость не найдена</div>;
 
     return (
-        <div className="ditals_container">
+        <div className="page-container">
             <AppHeader />
             <AppNavbar />
-        <div className="news-detail">
-            <div className="news-header">
-                <h1>{newsItem.title}</h1>
-                <div className="news-meta">
-                    <span className="news-date">{newsItem.formattedDate}</span>
+            <main className="content-wrapper">
+                <div className="news-detail">
+                    <div className="news-header">
+                        <h1>{newsItem.title}</h1>
+                        <div className="news-meta">
+                            <span className="news-date">{newsItem.formattedDate}</span>
+                        </div>
+                    </div>
+
+                    <div
+                        className="news-content"
+                        dangerouslySetInnerHTML={{ __html: newsItem.content }}
+                    />
+
+                    <div className="news-footer">
+                        <Link to="/" className="back-button">
+                            ← Назад к списку новостей
+                        </Link>
+                    </div>
                 </div>
-            </div>
-
-            <div
-                className="news-content"
-                dangerouslySetInnerHTML={{ __html: newsItem.content }}
-            />
-
-            <div className="news-footer">
-                <Link to="/" className="back-button">
-                    ← Назад к списку новостей
-                </Link>
-            </div>
-        </div>
+            </main>
             <AppFooter />
         </div>
     );
 };
 
-export default NewsDitail;
+export default NewsDetail;
