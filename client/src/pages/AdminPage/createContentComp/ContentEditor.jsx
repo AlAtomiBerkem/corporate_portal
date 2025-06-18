@@ -179,7 +179,7 @@ const ContentEditor = ({
 
             if (entityType === 'IMAGE') {
                 return {
-                    component: () => <img src={data.src} alt="" style={{ maxWidth: '100%' }} />,
+                    component: () => <img src={data.src} alt="" style={{ Width: '30%' }} />, // тут регилуруем размер добавляемой картинки
                     editable: false,
                 };
             }
