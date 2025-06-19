@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const bcryptjs = require('bcryptjs');
 const Admin = require('./model/admin');
 require('dotenv').config();
 
@@ -9,16 +9,12 @@ async function createAdmin() {
         await mongoose.connect(process.env.MONGODB_URI);
         console.log('Connected to DB');
 
-        // Проверяем, есть ли уже админы
-        const existingAdmin = await Admin.findOne({ login: 'admin' });
-        if (existingAdmin) {
-            console.log('Администратор уже существует');
-            return;
-        }
+        // удаляем админа который уже существует
+        await Admin.deleteMany({ login: 'admin' });
 
         // Хешируем пароль
         const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash('admin123', saltRounds);
+        const hashedPassword = await bcryptjs.hash('*********', saltRounds);
 
         // Создаём админа
         const admin = new Admin({
@@ -28,8 +24,6 @@ async function createAdmin() {
 
         await admin.save();
         console.log('Администратор создан:');
-        console.log(`Логин: admin`);
-        console.log(`Пароль: admin123`);
 
     } catch (error) {
         console.error('Ошибка:', error);
