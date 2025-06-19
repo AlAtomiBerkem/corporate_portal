@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt')
+const bcryptjs = require('bcryptjs')
 
 const adminSchema = new mongoose.Schema({
     login: { type: String, unique: true },
@@ -8,7 +8,7 @@ const adminSchema = new mongoose.Schema({
 });
 
 adminSchema.methods.validatePassword = function(password) {
-    return bcrypt.compare(password, this.password);
+    return bcryptjs.compare(password, this.password);
 };
 
 // // хешируем если регистрируемся через фронт
