@@ -5,13 +5,11 @@ class AuthController {
     async login(req, res) {
         try {
             const { login, password } = req.body;
-            console.log('Полученный пароль (должен быть чистым):', password); // <- добавить
-
             const admin = await Admin.findOne({ login });
 
             // Условие 1: Проверка существования администратора
             if (!admin) {
-                console.log(`Администратор с логином "${login}" не найден`);
+                console.log(`Администратор с логином не найден`);
                 return res.status(401).json({ message: 'Неверные логин' });
             }
 
