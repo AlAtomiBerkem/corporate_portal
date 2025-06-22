@@ -77,7 +77,7 @@ const NewsList = ({ content }) => {
         <div className='wrap'>
             <div dangerouslySetInnerHTML={{__html: content}}/>
             <div className="news-container">
-                <h2 className="news-name">Новости</h2>
+                <h2 className="news-name">Но  вости</h2>
                 <div className="news-grid">
                     {news.map((item) => (
                         <article key={item._id} className="news-card">

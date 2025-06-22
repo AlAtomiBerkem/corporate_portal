@@ -35,7 +35,7 @@ class PublicController {
         try {
             const news = await News.find({});
             if(!news || news.length === 0) {
-                res.status(400).json({message: 'ошибка новость не найдена'})
+               return  res.status(400).json({message: 'ошибка новость не найдена'})
             }
 
             res.status(200).json({
@@ -111,7 +111,7 @@ async publicLegal(req, res) {
         try {
             const legal = await Legal.find({})
             if(!legal) {
-                res.status(400).json({message: 'ошибка юр статьи не найдены или пусты'})
+              return   res.status(400).json({message: 'ошибка юр статьи не найдены или пусты'})
             }
             res.status(200).json({data: legal})
         } catch (e) {
