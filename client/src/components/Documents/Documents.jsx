@@ -10,75 +10,47 @@ const Documents = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [downloadingId, setDownloadingId] = useState(null);
 
     useEffect(() => {
         const fetchDocuments = async () => {
             try {
                 setLoading(true);
                 setError(null);
-
-                const response = await publicApi.getDocuments();
-
-                const normalizedDocs = (Array.isArray(response) ? response : (response?.documents || []))
-                    .map(doc => ({
-                        _id: doc._id || Math.random().toString(),
-                        name: doc.name || 'Без названия',
-                        fileName: doc.fileName || doc.name || `document_${Date.now()}`,
-                        description: doc.description || '',
-                        size: typeof doc.size === 'number' ? doc.size : 0,
-                        category: doc.category || null,
-                        uploadedAt: doc.uploadedAt || doc.createdAt || new Date().toISOString(),
-                        downloading: false
-                    }));
-
-                setDocuments(normalizedDocs);
+                const docs = await publicApi.getDocuments();
+                setDocuments(Array.isArray(docs) ? docs : []);
             } catch (error) {
-                console.error('Ошибка загрузки документов:', error);
                 setError('Не удалось загрузить документы. Пожалуйста, попробуйте позже.');
             } finally {
                 setLoading(false);
             }
         };
-
         fetchDocuments();
     }, []);
 
-    const handleDownload = async (fileName, documentName) => {
-        if (!fileName) {
+    const handleDownload = async (id, originalName) => {
+        if (!id) {
             setError('Не указано имя файла для скачивания');
             return;
         }
-
         try {
-            setDocuments(docs => docs.map(doc =>
-                doc.name === documentName ? { ...doc, downloading: true } : doc
-            ));
-
-            const response = await publicApi.getLoadingDocuments(fileName);
-
-            if (!response) {
-                throw new Error('Не удалось получить файл');
-            }
-
+            setDownloadingId(id);
+            const response = await publicApi.getLoadingDocuments(id);
+            if (!response) throw new Error('Не удалось получить файл');
             const url = window.URL.createObjectURL(new Blob([response]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', fileName);
+            link.setAttribute('download', originalName || id);
             document.body.appendChild(link);
             link.click();
-
             setTimeout(() => {
                 document.body.removeChild(link);
                 window.URL.revokeObjectURL(url);
             }, 100);
-
         } catch (error) {
-            console.error('Ошибка скачивания:', error);
             setError(error.message || 'Ошибка при скачивании файла');
         } finally {
-            setDocuments(docs => docs.map(doc =>
-                doc.name === documentName ? { ...doc, downloading: false } : doc
-            ));
+            setDownloadingId(null);
         }
     };
 
@@ -94,34 +66,33 @@ const Documents = () => {
     };
 
     const filteredDocuments = documents.filter(doc => {
-        const docName = doc?.name || '';
-        const search = searchTerm?.toLowerCase() || '';
-        return docName.toLowerCase().includes(search);
+        const search = searchTerm.toLowerCase();
+        return (
+            (doc.title && doc.title.toLowerCase().includes(search)) ||
+            (doc.originalName && doc.originalName.toLowerCase().includes(search))
+        );
     });
 
     return (
         <div className="documents-page">
             <AppHeader />
             <AppNavbar />
-
             <main className="documents-container">
                 <div className="documents-header">
                     <h1>Документы</h1>
                     <p>Официальные документы и материалы для скачивания</p>
                 </div>
-
                 <div className="documents-controls">
                     <div className="search-box">
                         <input
                             type="text"
-                            placeholder="Поиск по названию документа..."
+                            placeholder="Поиск по названию или имени файла..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             disabled={loading}
                         />
                     </div>
                 </div>
-
                 {error && (
                     <div className="error-message">
                         {error}
@@ -130,7 +101,6 @@ const Documents = () => {
                         </button>
                     </div>
                 )}
-
                 {loading ? (
                     <div className="loading-indicator">
                         <div className="loading-spinner"></div>
@@ -153,27 +123,25 @@ const Documents = () => {
                         <table className="documents-table">
                             <thead>
                             <tr>
-                                <th>Название документа</th>
-                                <th>Описание</th>
+                                <th>Название</th>
                                 <th>Дата</th>
                                 <th>Размер</th>
-                                <th></th>
+                                <th style={{background: '#025178', color: '#025178'}}></th>
                             </tr>
                             </thead>
                             <tbody>
                             {filteredDocuments.map(doc => (
-                                <tr key={doc._id}>
-                                    <td className="document-name">{doc.name}</td>
-                                    <td className="document-description">{doc.description}</td>
+                                <tr key={doc.id}>
+                                    <td className="document-title">{doc.title}</td>
                                     <td className="document-date">{formatDate(doc.uploadedAt)}</td>
                                     <td className="document-size">{formatFileSize(doc.size)}</td>
                                     <td className="document-actions">
                                         <button
                                             className="download-btn"
-                                            onClick={() => handleDownload(doc.fileName, doc.name)}
-                                            disabled={doc.downloading}
+                                            onClick={() => handleDownload(doc.id, doc.originalName)}
+                                            disabled={downloadingId === doc.id}
                                         >
-                                            {doc.downloading ? 'Скачивание...' : 'Скачать'}
+                                            {downloadingId === doc.id ? 'Скачивание...' : 'Скачать'}
                                         </button>
                                     </td>
                                 </tr>
@@ -183,7 +151,6 @@ const Documents = () => {
                     </div>
                 )}
             </main>
-
             <AppFooter />
         </div>
     );
