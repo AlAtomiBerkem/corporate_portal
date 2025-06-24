@@ -6,7 +6,7 @@ const path = require("path");
 const fs = require('fs'); // Добавляем импорт модуля fs
 
 
-const DOCUMENTS_DIR = path.join(__dirname, '/documents');
+const DOCUMENTS_DIR = path.join(__dirname, 'documents');
 const META_FILE = path.join(DOCUMENTS_DIR, '_metadata.json');
 console.log(DOCUMENTS_DIR)
 class PublicController {
@@ -55,30 +55,25 @@ class PublicController {
                     message: 'Папка с документами пуста'
                 });
             }
-
             let meta = {};
             if (fs.existsSync(META_FILE)) {
                 meta = JSON.parse(fs.readFileSync(META_FILE, 'utf-8'));
             }
-
             const files = fs.readdirSync(DOCUMENTS_DIR)
-                .filter(file => file !== '_metadata.json' && !file.startsWith('.'));
-
+                .filter(file => file !== '_metadata.json' && !file.startsWith('.') && fs.existsSync(path.join(DOCUMENTS_DIR, file)));
             const documents = files.map(file => ({
                 id: file,
                 title: meta[file]?.title || path.basename(file, path.extname(file)),
                 url: `/documents/${file}`,
                 originalName: meta[file]?.originalName || file,
-                size: meta[file]?.size || 0,
+                size: fs.statSync(path.join(DOCUMENTS_DIR, file)).size,
                 uploadedAt: meta[file]?.uploadedAt || new Date().toISOString()
             }));
-
             res.status(200).json({
                 success: true,
                 count: documents.length,
                 documents
             });
-
         } catch (error) {
             console.error('Ошибка при получении документов:', error);
             res.status(500).json({
@@ -92,47 +87,22 @@ class PublicController {
     async downloadDocument(req, res) {
         try {
             const requestedFileName = req.params.fileName;
-
-            // 1. Читаем метаданные
-            let meta = {};
-            if (fs.existsSync(META_FILE)) {
-                meta = JSON.parse(fs.readFileSync(META_FILE, 'utf-8'));
-            }
-
-            // 2. Находим полное имя файла с UUID
-            const fullFileName = Object.keys(meta).find(
-                key => key.startsWith(requestedFileName.replace(/\.[^/.]+$/, "")) ||
-                    requestedFileName
-            );
-
-            if (!fullFileName) {
-                return res.status(404).json({
-                    success: false,
-                    message: "Файл не найден в метаданных"
-                });
-            }
-
-            const filePath = path.join(DOCUMENTS_DIR, fullFileName);
-
+            const filePath = path.join(DOCUMENTS_DIR, requestedFileName);
             if (!fs.existsSync(filePath)) {
                 return res.status(404).json({
                     success: false,
                     message: "Физический файл не найден"
                 });
             }
-
-            // 3. Получаем оригинальное имя для скачивания
-            const originalName = meta[fullFileName]?.originalName ||
-                fullFileName.split('_').slice(0, -1).join('_') +
-                path.extname(fullFileName);
-
-            // 4. Отправляем файл
+            let meta = {};
+            if (fs.existsSync(META_FILE)) {
+                meta = JSON.parse(fs.readFileSync(META_FILE, 'utf-8'));
+            }
+            const originalName = meta[requestedFileName]?.originalName || requestedFileName;
             res.setHeader('Content-Disposition', `attachment; filename="${originalName}"`);
             res.setHeader('Content-Type', 'application/octet-stream');
-
             const fileStream = fs.createReadStream(filePath);
             fileStream.pipe(res);
-
         } catch (error) {
             console.error('Ошибка загрузки:', error);
             res.status(500).json({

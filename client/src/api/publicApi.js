@@ -5,27 +5,26 @@ export const publicApi = {
     getNews: async () => await fetchAPI('/public/news'),
     getLegalArticle: async () => await fetchAPI('/public/legal'),
     getContent: async () => await fetchAPI('/public/content'),
-    getLoadingDocuments: async (fileName) => {
+    getLoadingDocuments: async (fileId) => {
         try {
-            const response = await fetch(`${baseUrl}/public/dock/${fileName}`, {
+            const response = await fetch(`${baseUrl}/public/dock/${fileId}`, {
                 method: 'GET',
                 credentials: 'include'
             });
-
-            // Проверяем content-type ответа
             const contentType = response.headers.get('content-type');
-
             if (contentType && contentType.includes('application/json')) {
-                // Это JSON ошибка
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Ошибка скачивания');
             } else {
-                // Это файл
                 return await response.blob();
             }
         } catch (error) {
             console.error('Download error:', error);
             throw error;
         }
-    },    getDocuments: async () => await fetchAPI('/public/docks')
+    },
+    getDocuments: async () => {
+        const response = await fetchAPI('/public/docks');
+        return response?.documents || [];
+    }
 };
