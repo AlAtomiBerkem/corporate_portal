@@ -11,6 +11,7 @@ router.patch('/update/legal/:id', checkAuth, checkAdmin, adminController.updateL
 router.delete('/delete/legal/:id', checkAuth, checkAdmin, adminController.deleteLegalInformation);
 
 router.post('/docs', checkAuth, checkAdmin, adminController.addDocument);
+router.post('/images', checkAuth, checkAdmin, adminController.addImage);
 router.delete('/docs/:id', checkAuth, checkAdmin, adminController.deleteDocument);
 
 router.post('/content', checkAuth, checkAdmin, adminController.addTechnicalContent);

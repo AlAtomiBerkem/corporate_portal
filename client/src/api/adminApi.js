@@ -19,6 +19,13 @@ export const adminApi = {
         return response;
     },
 
+    uploadImage: async (file) => {
+        const formData = new FormData();
+        formData.append('image', file);
+        const response = await withAuth(() => fetchAPI(`/admin/images`, 'POST', formData, true));
+        return response;
+    },
+
     deleteDocument: async (id) =>
         await withAuth(() => fetchAPI(`/admin/docs/${id}`, 'DELETE', null, true)),
 

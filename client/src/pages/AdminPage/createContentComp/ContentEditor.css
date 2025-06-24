@@ -136,3 +136,59 @@
 .content-editor__button--submit:hover {
     background-color: #2980B9;
 }
+
+.editor-content a {
+    color: #1976d2;
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.editor-content a:hover {
+    color: #0d47a1;
+}
+
+.editor-content a.draftjs-doc-link {
+    color: #1565c0;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    background: #e3f2fd;
+    border-radius: 4px;
+    padding: 2px 8px 2px 4px;
+    margin: 0 2px;
+    transition: background 0.2s;
+}
+.editor-content a.draftjs-doc-link:hover {
+    background: #bbdefb;
+    text-decoration: underline;
+}
+.editor-content .draftjs-doc-link__icon {
+    margin-right: 5px;
+    font-size: 1.1em;
+}
+
+.editor-content .draftjs-link-selected {
+    background: #e3f2fd;
+    border-radius: 3px;
+    color: #1976d2 !important;
+}
+
+.editor-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 10px 0;
+    display: block;
+}
+
+@media (max-width: 600px) {
+    .editor-content img {
+        max-width: 100%;
+        border-radius: 4px;
+    }
+    .editor-content a.draftjs-doc-link {
+        font-size: 13px;
+        padding: 2px 5px 2px 3px;
+    }
+}
