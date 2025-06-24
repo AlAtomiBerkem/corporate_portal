@@ -6,14 +6,24 @@ const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
 const DOCUMENTS_DIR = path.join(__dirname, 'documents');
+const IMAGES_DIR = path.join(__dirname, 'images');
 const META_FILE = path.join(DOCUMENTS_DIR, '_metadata.json');
+const IMAGES_META_FILE = path.join(IMAGES_DIR, '_metadata.json');
 
 if (!fs.existsSync(DOCUMENTS_DIR)) {
     fs.mkdirSync(DOCUMENTS_DIR, { recursive: true });
 }
 
+if (!fs.existsSync(IMAGES_DIR)) {
+    fs.mkdirSync(IMAGES_DIR, { recursive: true });
+}
+
 if (!fs.existsSync(META_FILE)) {
     fs.writeFileSync(META_FILE, '{}');
+}
+
+if (!fs.existsSync(IMAGES_META_FILE)) {
+    fs.writeFileSync(IMAGES_META_FILE, '{}');
 }
 
 class AdminController {
@@ -24,32 +34,33 @@ class AdminController {
             if (!req.files?.document || !req.body?.title) {
                 return res.status(400).json({ message: 'Требуется файл и название (title)' });
             }
-
             const file = req.files.document;
             const fileExt = path.extname(file.name);
             const baseName = path.basename(file.name, fileExt);
-
             const uniqueName = `${baseName}_${uuidv4()}${fileExt}`;
             const uploadPath = path.join(DOCUMENTS_DIR, uniqueName);
-
             await file.mv(uploadPath);
-
-            const meta = JSON.parse(fs.readFileSync(META_FILE, 'utf-8'));
+            if (!fs.existsSync(uploadPath)) {
+                return res.status(500).json({ message: 'Файл не был сохранён физически' });
+            }
+            let meta = {};
+            if (fs.existsSync(META_FILE)) {
+                meta = JSON.parse(fs.readFileSync(META_FILE, 'utf-8'));
+            }
             meta[uniqueName] = {
                 title: req.body.title,
                 originalName: file.name,
                 uploadedAt: new Date().toISOString()
             };
             fs.writeFileSync(META_FILE, JSON.stringify(meta, null, 2));
-
             res.status(201).json({
+                success: true,
                 message: 'Файл успешно загружен',
                 title: req.body.title,
                 fileUrl: `/documents/${uniqueName}`,
                 originalName: file.name,
                 documentId: uniqueName
             });
-
         } catch (error) {
             console.error('Ошибка загрузки файла:', error);
             res.status(500).json({
@@ -62,34 +73,28 @@ class AdminController {
     async deleteDocument(req, res) {
         try {
             const { id } = req.params;
-
             if (!id) {
                 return res.status(400).json({
                     success: false,
                     message: 'Не указан ID документа для удаления'
                 });
             }
-
             const filePath = path.join(DOCUMENTS_DIR, id);
-
             if (!fs.existsSync(filePath)) {
                 return res.status(404).json({
                     success: false,
                     message: 'Документ не найден'
                 });
             }
-
             fs.unlinkSync(filePath);
-
+            let meta = {};
             if (fs.existsSync(META_FILE)) {
-                const meta = JSON.parse(fs.readFileSync(META_FILE, 'utf-8'));
-
-                if (meta[id]) {
-                    delete meta[id];
-                    fs.writeFileSync(META_FILE, JSON.stringify(meta, null, 2));
-                }
+                meta = JSON.parse(fs.readFileSync(META_FILE, 'utf-8'));
             }
-
+            if (meta[id]) {
+                delete meta[id];
+                fs.writeFileSync(META_FILE, JSON.stringify(meta, null, 2));
+            }
             res.json({
                 success: true,
                 message: 'Документ успешно удален',
@@ -98,7 +103,6 @@ class AdminController {
                     deletedAt: new Date().toISOString()
                 }
             });
-
         } catch (error) {
             console.error('Ошибка при удалении документа:', error);
             res.status(500).json({
@@ -312,6 +316,45 @@ class AdminController {
             return res.status(500).json({
                 error: 'Произошла ошибка при удалении контента',
                 details: process.env.NODE_ENV === 'development' ? e.message : undefined
+            });
+        }
+    }
+
+    async addImage(req, res) {
+        try {
+            if (!req.files?.image) {
+                return res.status(400).json({ message: 'Требуется изображение' });
+            }
+            const file = req.files.image;
+            const fileExt = path.extname(file.name);
+            const baseName = path.basename(file.name, fileExt);
+            const uniqueName = `${baseName}_${uuidv4()}${fileExt}`;
+            const uploadPath = path.join(IMAGES_DIR, uniqueName);
+            await file.mv(uploadPath);
+            if (!fs.existsSync(uploadPath)) {
+                return res.status(500).json({ message: 'Изображение не было сохранено физически' });
+            }
+            let meta = {};
+            if (fs.existsSync(IMAGES_META_FILE)) {
+                meta = JSON.parse(fs.readFileSync(IMAGES_META_FILE, 'utf-8'));
+            }
+            meta[uniqueName] = {
+                originalName: file.name,
+                uploadedAt: new Date().toISOString()
+            };
+            fs.writeFileSync(IMAGES_META_FILE, JSON.stringify(meta, null, 2));
+            res.status(201).json({
+                success: true,
+                message: 'Изображение успешно загружено',
+                imageUrl: `/images/${uniqueName}`,
+                originalName: file.name,
+                imageId: uniqueName
+            });
+        } catch (error) {
+            console.error('Ошибка загрузки изображения:', error);
+            res.status(500).json({
+                message: 'Ошибка при загрузке изображения',
+                error: process.env.NODE_ENV === 'development' ? error.message : undefined
             });
         }
     }

@@ -4,6 +4,7 @@ import AppNavbar from "../../components/AppNavbar/AppNavbar.jsx";
 import AppFooter from "../../components/AppFooter/AppFooter.jsx";
 import { publicApi } from '../../api/publicApi.js';
 import './PageLegal.css';
+import { renderContent } from '../../helpers/renderContent.js';
 
 const PageLegal = () => {
     const [articles, setArticles] = useState([]);
@@ -74,9 +75,9 @@ const PageLegal = () => {
                                 />
                             )}
 
-                            <div
+                            <div 
                                 className="legal-article-content"
-                                dangerouslySetInnerHTML={{ __html: article.content }}
+                                dangerouslySetInnerHTML={{ __html: renderContent(article.content) }}
                             />
 
                             <div className="legal-article-meta">

@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { publicApi } from '../../api/publicApi.js';
 import { Link } from 'react-router-dom';
 import './NewsList.css';
+import { renderContent } from '../../helpers/renderContent.js';
 
 const NewsList = ({ content }) => {
-
-
     const [news, setNews] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -15,11 +14,9 @@ const NewsList = ({ content }) => {
             try {
                 const response = await publicApi.getNews();
                 const newsData = response?.data || [];
-
                 const sortedNews = Array.isArray(newsData)
                     ? [...newsData].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
                     : [];
-
                 setNews(sortedNews);
                 setLoading(false);
             } catch (err) {
@@ -28,7 +25,6 @@ const NewsList = ({ content }) => {
                 console.error('Ошибка при загрузке новостей:', err);
             }
         };
-
         fetchNews();
     }, []);
 
@@ -63,17 +59,7 @@ const NewsList = ({ content }) => {
         );
     }
 
-    // Функция для создания краткого описания из HTML-контента
-    const createExcerpt = (htmlContent, length = 150) => {
-        if (!htmlContent) return 'Описание отсутствует';
-        const plainText = htmlContent.replace(/<[^>]+>/g, '');
-        return plainText.substring(0, length) + (plainText.length > length ? '...' : '');
-    };
-
-
-
     return (
-
         <div className='wrap'>
             <div dangerouslySetInnerHTML={{__html: content}}/>
             <div className="news-container">
@@ -92,9 +78,10 @@ const NewsList = ({ content }) => {
                                     </time>
                                 </div>
                                 <h3 className="news-item-title">{item.title || 'Без названия'}</h3>
-                                <p className="news-excerpt">
-                                    {createExcerpt(item.content)}
-                                </p>
+                                <p 
+                                    className="news-excerpt"
+                                    dangerouslySetInnerHTML={{ __html: renderContent(item.content, 150) }}
+                                />
                                 <div className="news-footer">
                                     <Link to={`/news/${item._id}`} className="news-read-more">
                                         Читать далее

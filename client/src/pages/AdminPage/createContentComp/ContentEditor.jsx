@@ -1,10 +1,47 @@
 import { useState, useCallback } from 'react';
-import { Editor, EditorState, RichUtils, Modifier, convertToRaw, convertFromRaw } from 'draft-js';
+import { Editor, EditorState, RichUtils, Modifier, convertToRaw, convertFromRaw, CompositeDecorator } from 'draft-js';
 import DOMPurify from 'dompurify';
 import { stateToHTML } from 'draft-js-export-html';
+import { adminApi } from '../../../api/adminApi.js';
 
 import 'draft-js/dist/Draft.css';
 import './ContentEditor.css';
+
+// Кастомный decorator для ссылок
+function findLinkEntities(contentBlock, callback, contentState) {
+    contentBlock.findEntityRanges(
+        (character) => {
+            const entityKey = character.getEntity();
+            return (
+                entityKey !== null && contentState.getEntity(entityKey).getType() === 'LINK'
+            );
+        },
+        callback
+    );
+}
+
+const Link = (props) => {
+    const { url, isDocument } = props.contentState.getEntity(props.entityKey).getData();
+    const isSelected = props.decoratedText && props.children && props.children[0]?.props?.style?.background === 'rgb(227, 242, 253)';
+    return (
+        <a
+            href={url}
+            className={isDocument ? 'draftjs-doc-link' : ''}
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            {isDocument && <span className="draftjs-doc-link__icon">📄</span>}
+            <span className={isSelected ? 'draftjs-link-selected' : ''}>{props.children}</span>
+        </a>
+    );
+};
+
+const decorator = new CompositeDecorator([
+    {
+        strategy: findLinkEntities,
+        component: Link,
+    },
+]);
 
 const ContentEditor = ({
                            onSuccess,
@@ -25,19 +62,26 @@ const ContentEditor = ({
     const [editorState, setEditorState] = useState(() => {
         if (initialData?.content) {
             try {
-                const contentState = convertFromRaw(JSON.parse(initialData.content));
-                return EditorState.createWithContent(contentState);
+                // Проверяем, что это JSON, а не HTML
+                const parsed = JSON.parse(initialData.content);
+                if (parsed && parsed.blocks && parsed.entityMap !== undefined) {
+                    const contentState = convertFromRaw(parsed);
+                    return EditorState.createWithContent(contentState, decorator);
+                }
             } catch (e) {
+                // Если не JSON, создаём пустой редактор
                 console.error('Error parsing content:', e);
             }
         }
-        return EditorState.createEmpty();
+        return EditorState.createEmpty(decorator);
     });
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [showLinkInput, setShowLinkInput] = useState(false);
     const [linkUrl, setLinkUrl] = useState('');
+    const [uploadingDoc, setUploadingDoc] = useState(false);
+    const [uploadingImg, setUploadingImg] = useState(false);
 
     // Обработка изменений редактора
     const handleEditorChange = (newEditorState) => {
@@ -68,14 +112,13 @@ const ContentEditor = ({
             const contentStateWithEntity = contentState.createEntity(
                 'LINK',
                 'MUTABLE',
-                { url: linkUrl }
+                { url: linkUrl, isDocument: false }
             );
             const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
             const newEditorState = EditorState.set(
                 editorState,
                 { currentContent: contentStateWithEntity }
             );
-
             handleEditorChange(
                 RichUtils.toggleLink(
                     newEditorState,
@@ -125,45 +168,63 @@ const ContentEditor = ({
         );
     };
 
-    // Обработчик загрузки файлов
-    const handleFileUpload = (e) => {
+    // Загрузка документа и вставка ссылки
+    const handleDocumentUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
+        setUploadingDoc(true);
+        try {
+            const response = await adminApi.uploadDocument(file, file.name.replace(/\.[^/.]+$/, ''));
+            if (response?.success && response.documentId) {
+                const url = `/documents/${response.documentId}`;
+                const selection = editorState.getSelection();
+                const contentState = editorState.getCurrentContent();
+                const contentStateWithEntity = contentState.createEntity(
+                    'LINK',
+                    'MUTABLE',
+                    { url, isDocument: true }
+                );
+                const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+                const newContentState = Modifier.replaceText(
+                    contentState,
+                    selection,
+                    file.name,
+                    null,
+                    entityKey
+                );
+                handleEditorChange(
+                    EditorState.push(
+                        editorState,
+                        newContentState,
+                        'insert-characters'
+                    )
+                );
+            } else {
+                setError('Ошибка загрузки документа');
+            }
+        } catch (err) {
+            setError('Ошибка загрузки документа');
+        } finally {
+            setUploadingDoc(false);
+        }
+    };
 
-        // Здесь должна быть логика загрузки на сервер
-        // Для примера используем временную ссылку
-        const fileType = file.type.split('/')[0];
-        const url = URL.createObjectURL(file);
-
-        if (fileType === 'image') {
-            insertImage(url);
-        } else {
-            // Для других файлов можно добавить ссылку на скачивание
-            const selection = editorState.getSelection();
-            const contentState = editorState.getCurrentContent();
-
-            const contentStateWithEntity = contentState.createEntity(
-                'LINK',
-                'MUTABLE',
-                { url: url }
-            );
-            const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-
-            const newContentState = Modifier.replaceText(
-                contentState,
-                selection,
-                file.name,
-                null,
-                entityKey
-            );
-
-            handleEditorChange(
-                EditorState.push(
-                    editorState,
-                    newContentState,
-                    'insert-characters'
-                )
-            );
+    // Загрузка изображения и вставка картинки
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setUploadingImg(true);
+        try {
+            const response = await adminApi.uploadImage(file);
+            if (response?.success && response.imageUrl) {
+                insertImage(response.imageUrl);
+            } else {
+                setError('Ошибка загрузки изображения');
+            }
+        } catch (err) {
+            setError('Ошибка загрузки изображения');
+        } finally {
+            setUploadingImg(false);
         }
     };
 
@@ -179,7 +240,7 @@ const ContentEditor = ({
 
             if (entityType === 'IMAGE') {
                 return {
-                    component: () => <img src={data.src} alt="" style={{ Width: '30%' }} />, // тут регилуруем размер добавляемой картинки
+                    component: () => <img src={data.src} alt="" style={{ maxWidth: '100%', height: 'auto' }} />,
                     editable: false,
                 };
             }
@@ -196,25 +257,20 @@ const ContentEditor = ({
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-
         try {
-            // Конвертируем контент редактора в HTML
+            // Сохраняем только сериализованный JSON draft-js
             const contentState = editorState.getCurrentContent();
-            const htmlContent = stateToHTML(contentState);
-
-            // Отправляем на сервер HTML, а не JSON
+            const rawContent = convertToRaw(contentState);
             const contentData = {
                 title: formData.title.trim(),
-                content: htmlContent, // Теперь здесь HTML, а не JSON
+                content: JSON.stringify(rawContent),
             };
-
             if (initialData?._id) {
                 await apiMethods.update(initialData._id, contentData);
             } else {
                 await apiMethods.create(contentData);
             }
-
-            onSuccess(); // Закрываем редактор или обновляем список
+            onSuccess();
         } catch (err) {
             setError(err.message || `Ошибка при сохранении ${contentType}`);
         } finally {
@@ -254,6 +310,40 @@ const ContentEditor = ({
         const contentState = editorState.getCurrentContent();
         const block = contentState.getBlockForKey(selection.getStartKey());
         return block.getType() === blockType;
+    };
+
+    // Кастомные опции для stateToHTML
+    const customStateToHTML = (contentState) => {
+        const options = {
+            entityStyleFn: (entity) => {
+                const entityType = entity.getType();
+                const data = entity.getData();
+                
+                if (entityType === 'LINK') {
+                    const { url, isDocument } = data;
+                    const className = isDocument ? 'draftjs-doc-link' : '';
+                    const icon = isDocument ? '<span class="draftjs-doc-link__icon">📄</span>' : '';
+                    return {
+                        element: 'a',
+                        attributes: {
+                            href: url,
+                            target: '_blank',
+                            rel: 'noopener noreferrer',
+                            class: className
+                        },
+                        prefix: icon
+                    };
+                }
+                return {};
+            },
+            blockStyleFn: (block) => {
+                if (block.getType() === 'atomic') {
+                    return { style: { textAlign: 'center' } };
+                }
+                return {};
+            }
+        };
+        return stateToHTML(contentState, options);
     };
 
     return (
@@ -372,11 +462,22 @@ const ContentEditor = ({
                     <label className="file-upload-button">
                         <input
                             type="file"
-                            onChange={handleFileUpload}
+                            onChange={handleImageUpload}
                             style={{ display: 'none' }}
-                            accept="image/*,.pdf,.doc,.docx"
+                            accept="image/*"
+                            disabled={uploadingImg}
                         />
-                        📎 Файл
+                        🖼 Фото
+                    </label>
+                    <label className="file-upload-button">
+                        <input
+                            type="file"
+                            onChange={handleDocumentUpload}
+                            style={{ display: 'none' }}
+                            accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt"
+                            disabled={uploadingDoc}
+                        />
+                        📎 Документ
                     </label>
                 </div>
 

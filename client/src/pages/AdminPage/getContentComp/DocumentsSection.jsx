@@ -21,9 +21,7 @@ const DocumentsSection = () => {
     const fetchDocuments = async () => {
         try {
             setLoading(true);
-            const response = await publicApi.getDocuments();
-            // Обрабатываем ответ сервера в обоих форматах
-            const docs = Array.isArray(response) ? response : (response?.documents || []);
+            const docs = await publicApi.getDocuments();
             setDocuments(docs);
         } catch (error) {
             console.error('Ошибка загрузки документов:', error);
@@ -71,26 +69,18 @@ const DocumentsSection = () => {
         }
     };
 
-    const handleDownload = async (fileName, originalName) => {
+    const handleDownload = async (fileId, originalName) => {
         try {
             setLoading(true);
-            const response = await publicApi.getLoadingDocuments(fileName);
-
-            if (!response.ok) {
-                throw new Error('Файл не найден или ошибка сервера');
-            }
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
+            const downloadUrl = `http://localhost:5000/public/dock/${encodeURIComponent(fileId)}`;
             const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', originalName || fileName); // если originalName не указан, используем fileName
+            link.href = downloadUrl;
+            link.setAttribute('download', originalName);
+            link.style.display = 'none';
             document.body.appendChild(link);
             link.click();
-
             setTimeout(() => {
                 document.body.removeChild(link);
-                window.URL.revokeObjectURL(url);
             }, 100);
         } catch (error) {
             console.error('Ошибка скачивания:', error);
@@ -102,13 +92,11 @@ const DocumentsSection = () => {
 
     const handleDeleteDocument = async (id) => {
         if (!confirm('Вы уверены, что хотите удалить этот документ?')) return;
-
         try {
             setLoading(true);
             const response = await adminApi.deleteDocument(id);
-
             if (response?.success) {
-                setDocuments(docs => docs.filter(doc => doc.id !== id));
+                await fetchDocuments();
             } else {
                 throw new Error(response?.message || 'Ошибка удаления документа');
             }
@@ -218,7 +206,7 @@ const DocumentsSection = () => {
                                 <td className="document-actions">
                                     <button
                                         className="btn btn-download"
-                                        onClick={() => handleDownload(item.url, item.originalName)}
+                                        onClick={() => handleDownload(item.id, item.originalName)}
                                         disabled={loading}
                                     >
                                         Скачать

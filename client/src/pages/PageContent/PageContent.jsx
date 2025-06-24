@@ -4,6 +4,7 @@ import AppNavbar from "../../components/AppNavbar/AppNavbar.jsx";
 import AppFooter from "../../components/AppFooter/AppFooter.jsx";
 import { publicApi } from '../../api/publicApi.js';
 import './PageContentStyle.css';
+import { renderContent } from '../../helpers/renderContent.js';
 
 const PageContent = () => {
     const [articles, setArticles] = useState([]);
@@ -90,7 +91,10 @@ const PageContent = () => {
                                             className="article-image"
                                         />
                                     )}
-                                    <div dangerouslySetInnerHTML={{ __html: article.content }} />
+                                    <div 
+                                        className="article-content-text"
+                                        dangerouslySetInnerHTML={{ __html: renderContent(article.content) }}
+                                    />
                                     <div className="article-meta">
                                         <span className="article-date">
                                             {new Date(article.createdAt).toLocaleDateString('ru-RU', {
