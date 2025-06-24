@@ -90,21 +90,57 @@ class PublicController {
     }
 
     async downloadDocument(req, res) {
-        const fileName = req.params.fileName;
-        const filePath = path.join(DOCUMENTS_DIR, fileName);
+        try {
+            const requestedFileName = req.params.fileName;
 
-        if (fs.existsSync(filePath)) {
-            res.download(filePath, fileName, (err) => {
-                if (err) {
-                    console.error('Ошибка при загрузке файла:', err);
-                    res.status(500).send('Ошибка при загрузке файла');
-                }
+            // 1. Читаем метаданные
+            let meta = {};
+            if (fs.existsSync(META_FILE)) {
+                meta = JSON.parse(fs.readFileSync(META_FILE, 'utf-8'));
+            }
+
+            // 2. Находим полное имя файла с UUID
+            const fullFileName = Object.keys(meta).find(
+                key => key.startsWith(requestedFileName.replace(/\.[^/.]+$/, "")) ||
+                    requestedFileName
+            );
+
+            if (!fullFileName) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Файл не найден в метаданных"
+                });
+            }
+
+            const filePath = path.join(DOCUMENTS_DIR, fullFileName);
+
+            if (!fs.existsSync(filePath)) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Физический файл не найден"
+                });
+            }
+
+            // 3. Получаем оригинальное имя для скачивания
+            const originalName = meta[fullFileName]?.originalName ||
+                fullFileName.split('_').slice(0, -1).join('_') +
+                path.extname(fullFileName);
+
+            // 4. Отправляем файл
+            res.setHeader('Content-Disposition', `attachment; filename="${originalName}"`);
+            res.setHeader('Content-Type', 'application/octet-stream');
+
+            const fileStream = fs.createReadStream(filePath);
+            fileStream.pipe(res);
+
+        } catch (error) {
+            console.error('Ошибка загрузки:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Внутренняя ошибка сервера'
             });
-        } else {
-            res.status(404).send('Файл не найден');
         }
     }
-
 
 
 async publicLegal(req, res) {
