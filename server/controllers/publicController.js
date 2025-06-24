@@ -7,7 +7,9 @@ const fs = require('fs'); // Добавляем импорт модуля fs
 
 
 const DOCUMENTS_DIR = path.join(__dirname, 'documents');
+const IMAGES_DIR = path.join(__dirname, 'images');
 const META_FILE = path.join(DOCUMENTS_DIR, '_metadata.json');
+const IMAGES_META_FILE = path.join(IMAGES_DIR, '_metadata.json');
 console.log(DOCUMENTS_DIR)
 class PublicController {
     async publicContent(req, res) {
@@ -112,8 +114,38 @@ class PublicController {
         }
     }
 
+    async getImage(req, res) {
+        try {
+            const requestedFileName = req.params.fileName;
+            const filePath = path.join(IMAGES_DIR, requestedFileName);
+            if (!fs.existsSync(filePath)) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Изображение не найдено"
+                });
+            }
+            const ext = path.extname(requestedFileName).toLowerCase();
+            const mimeTypes = {
+                '.jpg': 'image/jpeg',
+                '.jpeg': 'image/jpeg',
+                '.png': 'image/png',
+                '.gif': 'image/gif',
+                '.webp': 'image/webp'
+            };
+            const contentType = mimeTypes[ext] || 'image/jpeg';
+            res.setHeader('Content-Type', contentType);
+            const fileStream = fs.createReadStream(filePath);
+            fileStream.pipe(res);
+        } catch (error) {
+            console.error('Ошибка получения изображения:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Внутренняя ошибка сервера'
+            });
+        }
+    }
 
-async publicLegal(req, res) {
+    async publicLegal(req, res) {
         try {
             const legal = await Legal.find({})
             if(!legal) {

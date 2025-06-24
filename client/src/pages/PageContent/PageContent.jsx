@@ -4,6 +4,49 @@ import AppNavbar from "../../components/AppNavbar/AppNavbar.jsx";
 import AppFooter from "../../components/AppFooter/AppFooter.jsx";
 import { publicApi } from '../../api/publicApi.js';
 import './PageContentStyle.css';
+import { convertFromRaw } from 'draft-js';
+import { stateToHTML } from 'draft-js-export-html';
+
+const renderContent = (content) => {
+    try {
+        const parsed = JSON.parse(content);
+        if (parsed && parsed.blocks && parsed.entityMap !== undefined) {
+            const contentState = convertFromRaw(parsed);
+            const options = {
+                entityStyleFn: (entity) => {
+                    const entityType = entity.getType();
+                    const data = entity.getData();
+                    
+                    if (entityType === 'LINK') {
+                        const { url, isDocument } = data;
+                        const className = isDocument ? 'draftjs-doc-link' : '';
+                        const icon = isDocument ? '<span class="draftjs-doc-link__icon">📄</span>' : '';
+                        return {
+                            element: 'a',
+                            attributes: {
+                                href: url,
+                                target: '_blank',
+                                rel: 'noopener noreferrer',
+                                class: className
+                            },
+                            prefix: icon
+                        };
+                    }
+                    return {};
+                },
+                blockStyleFn: (block) => {
+                    if (block.getType() === 'atomic') {
+                        return { style: { textAlign: 'center' } };
+                    }
+                    return {};
+                }
+            };
+            return <div dangerouslySetInnerHTML={{ __html: stateToHTML(contentState, options) }} />;
+        }
+    } catch (e) {}
+    // fallback: если это HTML
+    return <div dangerouslySetInnerHTML={{ __html: content }} />;
+};
 
 const PageContent = () => {
     const [articles, setArticles] = useState([]);
@@ -90,7 +133,7 @@ const PageContent = () => {
                                             className="article-image"
                                         />
                                     )}
-                                    <div dangerouslySetInnerHTML={{ __html: article.content }} />
+                                    {renderContent(article.content)}
                                     <div className="article-meta">
                                         <span className="article-date">
                                             {new Date(article.createdAt).toLocaleDateString('ru-RU', {
