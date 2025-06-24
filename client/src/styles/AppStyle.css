@@ -75,3 +75,53 @@ a {
         font-size: 13px;
     }
 }
+
+/* Стили для ссылок на документы в draft-js контенте */
+.draftjs-doc-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #007bff;
+    text-decoration: none;
+    padding: 5px 10px;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.draftjs-doc-link:hover {
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+}
+
+.draftjs-doc-link__icon {
+    font-size: 14px;
+}
+
+/* Стили для изображений в draft-js контенте */
+.news-content img,
+.legal-article img,
+.article-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 10px 0;
+    display: block;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .draftjs-doc-link {
+        font-size: 14px;
+        padding: 4px 8px;
+    }
+    
+    .news-content img,
+    .legal-article img,
+    .article-content img {
+        margin: 8px 0;
+    }
+}

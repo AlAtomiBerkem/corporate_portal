@@ -3,14 +3,15 @@ import ContentEditor from '../createContentComp/ContentEditor.jsx'; // <- обр
 import { publicApi } from "../../../api/publicApi.js";
 import { adminApi } from "../../../api/adminApi.js";
 import '../styles/NewsSection.css';
+import { renderContent } from '../../../helpers/renderContent.js';
 
 const NewsSection = () => {
     const renderContentCard = (contentItem) => (
         <>
             <h3 className="news-title">{contentItem.title}</h3>
-            <div
+            <div 
                 className="news-content"
-                dangerouslySetInnerHTML={{ __html: contentItem.content }}
+                dangerouslySetInnerHTML={{ __html: renderContent(contentItem.content, 200) }}
             />
         </>
     );

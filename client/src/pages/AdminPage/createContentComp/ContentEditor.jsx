@@ -217,8 +217,7 @@ const ContentEditor = ({
         try {
             const response = await adminApi.uploadImage(file);
             if (response?.success && response.imageUrl) {
-                const fullUrl = `http://localhost:5000${response.imageUrl}`;
-                insertImage(fullUrl);
+                insertImage(response.imageUrl);
             } else {
                 setError('Ошибка загрузки изображения');
             }

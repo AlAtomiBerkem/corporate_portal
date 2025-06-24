@@ -3,14 +3,15 @@ import ContentEditor from '../createContentComp/ContentEditor.jsx';
 import { publicApi } from "../../../api/publicApi.js";
 import { adminApi } from "../../../api/adminApi.js";
 import '../styles/LegalArticlesSection.css';
+import { renderContent } from '../../../helpers/renderContent.js';
 
 const LegalArticlesSection = () => {
     const renderLegalCard = (legalItem) => (
         <>
             <h3 className='news-title'>{legalItem.title}</h3>
-            <div
+            <div 
                 className='news-content'
-                dangerouslySetInnerHTML={{ __html: legalItem.content }}
+                dangerouslySetInnerHTML={{ __html: renderContent(legalItem.content, 200) }}
             />
         </>
     )

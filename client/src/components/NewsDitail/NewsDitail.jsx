@@ -4,7 +4,8 @@ import { publicApi } from "../../api/publicApi.js";
 import AppHeader from "../../components/AppHeader/AppHeader.jsx";
 import AppNavbar from "../../components/AppNavbar/AppNavbar.jsx";
 import AppFooter from "../../components/AppFooter/AppFooter.jsx";
-import './NewsDitail.css'
+import './NewsDitail.css';
+import { renderContent } from '../../helpers/renderContent.js';
 
 const NewsDetail = () => {
     const { id } = useParams();
@@ -57,9 +58,9 @@ const NewsDetail = () => {
                         </div>
                     </div>
 
-                    <div
+                    <div 
                         className="news-content"
-                        dangerouslySetInnerHTML={{ __html: newsItem.content }}
+                        dangerouslySetInnerHTML={{ __html: renderContent(newsItem.content) }}
                     />
 
                     <div className="news-footer">
