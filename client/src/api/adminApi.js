@@ -15,8 +15,8 @@ export const adminApi = {
         const formData = new FormData();
         formData.append('title', title);
         formData.append('document', file);
-
-        return await withAuth(() => fetchAPI(`/admin/docs`, 'POST', formData, true));
+        const response = await withAuth(() => fetchAPI(`/admin/docs`, 'POST', formData, true));
+        return response;
     },
 
     deleteDocument: async (id) =>

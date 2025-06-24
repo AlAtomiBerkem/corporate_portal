@@ -21,8 +21,7 @@ const DocumentsSection = () => {
     const fetchDocuments = async () => {
         try {
             setLoading(true);
-            const response = await publicApi.getDocuments();
-             const docs = Array.isArray(response) ? response : (response?.documents || []);
+            const docs = await publicApi.getDocuments();
             setDocuments(docs);
         } catch (error) {
             console.error('Ошибка загрузки документов:', error);
@@ -93,13 +92,11 @@ const DocumentsSection = () => {
 
     const handleDeleteDocument = async (id) => {
         if (!confirm('Вы уверены, что хотите удалить этот документ?')) return;
-
         try {
             setLoading(true);
             const response = await adminApi.deleteDocument(id);
-
             if (response?.success) {
-                setDocuments(docs => docs.filter(doc => doc.id !== id));
+                await fetchDocuments();
             } else {
                 throw new Error(response?.message || 'Ошибка удаления документа');
             }
