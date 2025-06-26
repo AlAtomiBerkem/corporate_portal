@@ -9,7 +9,7 @@ const LegalArticlesSection = () => {
     const renderLegalCard = (legalItem) => (
         <>
             <h3 className='news-title'>{legalItem.title}</h3>
-            <div 
+            <div
                 className='news-content'
                 dangerouslySetInnerHTML={{ __html: renderContent(legalItem.content, 200) }}
             />

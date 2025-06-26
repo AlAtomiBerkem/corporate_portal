@@ -10,7 +10,7 @@ const NewsSection = () => {
     const renderNewsCard = (newsItem) => (
         <>
             <h3 className="news-title">{newsItem.title}</h3>
-            <div 
+            <div
                 className="news-content"
                 dangerouslySetInnerHTML={{ __html: renderContent(newsItem.content, 200) }}
             />

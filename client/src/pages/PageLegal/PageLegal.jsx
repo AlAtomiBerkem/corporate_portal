@@ -75,7 +75,7 @@ const PageLegal = () => {
                                 />
                             )}
 
-                            <div 
+                            <div
                                 className="legal-article-content"
                                 dangerouslySetInnerHTML={{ __html: renderContent(article.content) }}
                             />

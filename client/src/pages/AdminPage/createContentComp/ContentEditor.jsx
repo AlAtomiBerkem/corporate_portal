@@ -177,28 +177,28 @@ const ContentEditor = ({
             const response = await adminApi.uploadDocument(file, file.name.replace(/\.[^/.]+$/, ''));
             if (response?.success && response.documentId) {
                 const url = `/documents/${response.documentId}`;
-                const selection = editorState.getSelection();
-                const contentState = editorState.getCurrentContent();
-                const contentStateWithEntity = contentState.createEntity(
-                    'LINK',
-                    'MUTABLE',
+            const selection = editorState.getSelection();
+            const contentState = editorState.getCurrentContent();
+            const contentStateWithEntity = contentState.createEntity(
+                'LINK',
+                'MUTABLE',
                     { url, isDocument: true }
-                );
-                const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-                const newContentState = Modifier.replaceText(
-                    contentState,
-                    selection,
-                    file.name,
-                    null,
-                    entityKey
-                );
-                handleEditorChange(
-                    EditorState.push(
-                        editorState,
-                        newContentState,
-                        'insert-characters'
-                    )
-                );
+            );
+            const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+            const newContentState = Modifier.replaceText(
+                contentState,
+                selection,
+                file.name,
+                null,
+                entityKey
+            );
+            handleEditorChange(
+                EditorState.push(
+                    editorState,
+                    newContentState,
+                    'insert-characters'
+                )
+            );
             } else {
                 setError('Ошибка загрузки документа');
             }

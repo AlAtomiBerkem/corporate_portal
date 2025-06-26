@@ -91,10 +91,10 @@ class AdminController {
             if (fs.existsSync(META_FILE)) {
                 meta = JSON.parse(fs.readFileSync(META_FILE, 'utf-8'));
             }
-            if (meta[id]) {
-                delete meta[id];
-                fs.writeFileSync(META_FILE, JSON.stringify(meta, null, 2));
-            }
+                if (meta[id]) {
+                    delete meta[id];
+                    fs.writeFileSync(META_FILE, JSON.stringify(meta, null, 2));
+                }
             res.json({
                 success: true,
                 message: 'Документ успешно удален',

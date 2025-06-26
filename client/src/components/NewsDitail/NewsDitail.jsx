@@ -58,7 +58,7 @@ const NewsDetail = () => {
                         </div>
                     </div>
 
-                    <div 
+                    <div
                         className="news-content"
                         dangerouslySetInnerHTML={{ __html: renderContent(newsItem.content) }}
                     />
