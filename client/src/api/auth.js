@@ -1,6 +1,6 @@
 import { refreshToken } from '../helpers/Auth.js'
 
-const baseUrl = 'http://localhost:5000';
+const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export async function fetchAPI(endpoint, method = 'GET', body = null, needAuth = false, isFileDownload = false) {
     const headers = {};
