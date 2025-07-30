@@ -1,0 +1,21 @@
+FROM node:20-alpine
+
+WORKDIR /usr/src/app
+
+# Копируем package.json
+COPY package.json ./
+
+# Устанавливаем только production зависимости без системных пакетов
+RUN npm install --only=production --no-audit --no-fund --no-optional && \
+    npm cache clean --force
+
+# Копируем код
+COPY . .
+
+# Создаем директории
+RUN mkdir -p documents images
+
+EXPOSE 5000
+
+# Запускаем приложение
+CMD ["node", "index.js"] 
