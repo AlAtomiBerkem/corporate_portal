@@ -1,0 +1,31 @@
+FROM node:20-alpine
+
+WORKDIR /usr/src/app
+
+# Попробуем несколько альтернативных mirrors
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com\/alpine/g' /etc/apk/repositories && \
+    apk add --no-cache python3 make g++ || \
+    (sed -i 's/mirrors.aliyun.com\/alpine/dl-cdn.alpinelinux.org/g' /etc/apk/repositories && \
+     sed -i 's/dl-cdn.alpinelinux.org/mirror.yandex.ru\/mirrors\/alpine/g' /etc/apk/repositories && \
+     apk add --no-cache python3 make g++) || \
+    (sed -i 's/mirror.yandex.ru\/mirrors\/alpine/dl-cdn.alpinelinux.org/g' /etc/apk/repositories && \
+     sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn\/alpine/g' /etc/apk/repositories && \
+     apk add --no-cache python3 make g++)
+
+# Копируем package.json
+COPY package.json ./
+
+# Устанавливаем только production зависимости
+RUN npm install --only=production --no-audit --no-fund --no-optional && \
+    npm cache clean --force
+
+# Копируем код
+COPY . .
+
+# Создаем директории
+RUN mkdir -p documents images
+
+EXPOSE 5000
+
+# Запускаем приложение
+CMD ["node", "index.js"] 

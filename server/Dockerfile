@@ -3,7 +3,8 @@ FROM node:20-alpine
 WORKDIR /usr/src/app
 
 # Устанавливаем только необходимые зависимости для сборки
-RUN apk add --no-cache python3 make g++
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirror.yandex.ru\/mirrors\/alpine/g' /etc/apk/repositories && \
+    apk add --no-cache python3 make g++
 
 # Копируем только package.json и package-lock.json сначала
 COPY package*.json ./

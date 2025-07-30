@@ -4,7 +4,7 @@ services:
   server:
     build:
       context: ./server
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.light
     ports:
       - "5000:5000"
     environment:
