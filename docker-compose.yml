@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile.alternative
+    image: corporate_portal-server:latest
     ports:
       - "5000:5000"
     environment:
@@ -13,6 +11,14 @@ services:
       - MONGODB_URI=mongodb://mongo:27017/site_database
       - ACCESS_SECRET=your_access_secret_key_here
       - REFRESH_SECRET=your_refresh_secret_key_here
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
     depends_on:
       mongo:
         condition: service_healthy

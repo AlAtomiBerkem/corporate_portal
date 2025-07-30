@@ -1,0 +1,14 @@
+FROM node:20-alpine
+
+WORKDIR /usr/src/app
+
+# Копируем все файлы сразу
+COPY . .
+
+# Создаем директории
+RUN mkdir -p documents images
+
+EXPOSE 5000
+
+# Запускаем приложение напрямую
+CMD ["node", "index.js"] 
