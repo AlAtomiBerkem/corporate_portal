@@ -1,5 +1,4 @@
 const News = require("../model/news");
-const Document = require("../model/Document");
 const Legal = require("../model/legalPageArticle");
 const Public = require("../model/publicContent");
 const path = require("path");

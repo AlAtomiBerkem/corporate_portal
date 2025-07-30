@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const publicController = require("../controllers//publicController");
+const publicController = require("../controllers/publicController");
 
 router.get('/news', publicController.publicNews);
 router.get('/docks', publicController.publicDock);
