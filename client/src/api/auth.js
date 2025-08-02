@@ -1,6 +1,8 @@
 import { refreshToken } from '../helpers/Auth.js'
 
-const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+// Автоматически определяем API URL в зависимости от окружения
+const baseUrl = import.meta.env.VITE_API_URL || 
+  (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://ir-kazan.ru/api');
 
 export async function fetchAPI(endpoint, method = 'GET', body = null, needAuth = false, isFileDownload = false) {
     const headers = {};
