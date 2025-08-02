@@ -6,8 +6,7 @@ WORKDIR /usr/src/app
 COPY package.json ./
 
 # Устанавливаем только production зависимости без системных пакетов
-RUN npm install --only=production --no-audit --no-fund --no-optional && \
-    npm cache clean --force
+RUN npm install --only=production --no-audit --no-fund --no-optional &&     npm cache clean --force
 
 # Копируем код
 COPY . .
@@ -18,4 +17,4 @@ RUN mkdir -p documents images
 EXPOSE 5000
 
 # Запускаем приложение
-CMD ["node", "index.js"] 
+CMD ["node", "index.js"]
