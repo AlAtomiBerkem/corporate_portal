@@ -12,7 +12,6 @@ const AppNavbar = () => {
     return (
         <nav className="navigate">
             <div className="container">
-                {/* Бургер-меню с обработчиком клика */}
                 <div
                     className={`burger-menu ${isMenuOpen ? 'active' : ''}`}
                     onClick={toggleMenu}
@@ -22,7 +21,6 @@ const AppNavbar = () => {
                     <div className="burger-line"></div>
                 </div>
 
-                {/* Список навигации с динамическим классом */}
                 <ul className={`navigate__list ${isMenuOpen ? 'active' : ''}`}>
                     <li className="navigate__item">
                         <Link to="/" className="navigate__link">Главная</Link>

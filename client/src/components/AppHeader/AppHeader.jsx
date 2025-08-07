@@ -3,19 +3,18 @@ import { Link } from 'react-router-dom';
 import './AppHeaderStyle.css';
 import User from '../../assets/svg/user.jsx';
 import Logo from '../../assets/logo10.png';
-import { isAuthenticated } from '../../api/auth.js'; // Импортируем функцию проверки аутентификации
+import { isAuthenticated } from '../../api/auth.js';
 
 const AppHeader = () => {
-    const isAuth = isAuthenticated(); // Используем функцию из Auth.js
+    const isAuth = isAuthenticated();
 
     return (
-        <div>
             <header className="header">
                 <div className="container">
                     <div className="header-content">
                         <div className="header-logo-name">
                             <div className="header-logo"><img src={Logo} alt="logo"/></div>
-                            <p className="header__company-name">Инженерные решения</p>
+                            <h1>Инженерные решения</h1>
                         </div>
                         <div className="header__button">
                             <Link to={isAuth ? "/admin" : "/login"}>
@@ -30,7 +29,6 @@ const AppHeader = () => {
                     </div>
                 </div>
             </header>
-        </div>
     );
 };
 

@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /tmp/
+Disallow: /private/
+Disallow: /search/
+Disallow: /*?*
+Disallow: /*.php$
+
+Sitemap: https://ir-kazan.ru/sitemap.xml
