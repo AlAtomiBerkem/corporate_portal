@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './AppNavbarStyle.css';
+import { HashLink } from 'react-router-hash-link';
 
 const AppNavbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -29,7 +30,7 @@ const AppNavbar = () => {
                         <Link to="/PageContent" className="navigate__link">Подключение газа</Link>
                     </li>
                     <li className="navigate__item">
-                        <Link to="/#maintenanceAncor" className="navigate__link">Техническое обслуживание</Link>
+                        <HashLink smooth to="/#maintenanceAncor" className="navigate__link">Техническое обслуживание</HashLink>
                     </li>
                     <li className="navigate__item">
                         <Link to="/PageLegal" className="navigate__link">Юридическим лицам</Link>
@@ -38,7 +39,7 @@ const AppNavbar = () => {
                         <Link to="/documents" className="navigate__link">Прилагающиеся документы</Link>
                     </li>
                     <li className="navigate__item">
-                        <Link to="/#contactAncor" className="navigate__link">Контакты</Link>
+                        <HashLink smooth to="/#contactAncor" className="navigate__link">Контакты</HashLink>
                     </li>
                 </ul>
             </div>

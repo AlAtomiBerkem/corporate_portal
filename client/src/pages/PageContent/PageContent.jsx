@@ -46,14 +46,6 @@ const PageContent = () => {
         );
     }
 
-    if (error) {
-        return (
-            <div className="error-container">
-                <p>{error}</p>
-                <button onClick={() => window.location.reload()}>Попробовать снова</button>
-            </div>
-        );
-    }
 
     return (
         <div className="page-content">
