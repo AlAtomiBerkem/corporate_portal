@@ -36,7 +36,7 @@ export const renderContent = (content, excerptLength = null) => {
                     }
                     if (entityType === 'IMAGE') {
                         const imageSrc = data.src.startsWith('/images/') 
-                            ? `http://localhost:5000/public${data.src}` 
+                            ? `/public${data.src}` 
                             : data.src;
                         return {
                             element: 'img',
