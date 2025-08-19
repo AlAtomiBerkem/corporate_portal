@@ -101,14 +101,17 @@ class PublicController {
                 meta = JSON.parse(fs.readFileSync(META_FILE, 'utf-8'));
             }
             const originalName = meta[requestedFileName]?.originalName ? Buffer.from(meta[requestedFileName].originalName, 'utf8').toString() : requestedFileName;
-            // Формируем максимально безопасный ASCII заголовок без не-ASCII символов,
-            // чтобы исключить ERR_INVALID_CHAR в Node
+            // Безопасное ASCII имя для Content-Disposition; Express сам выставит корректные заголовки
             const extension = (path.extname(originalName) || path.extname(requestedFileName) || '').replace(/[^A-Za-z0-9.]/g, '');
-            const safeAsciiName = `document${extension || ''}`; // предсказуемое ASCII-имя
-            res.setHeader('Content-Disposition', `attachment; filename="${safeAsciiName}"`);
-            res.setHeader('Content-Type', 'application/octet-stream');
-            const fileStream = fs.createReadStream(filePath);
-            fileStream.pipe(res);
+            const safeAsciiName = `document${extension || ''}`;
+            res.download(filePath, safeAsciiName, (err) => {
+                if (err) {
+                    console.error('Ошибка при отдаче файла:', err);
+                    if (!res.headersSent) {
+                        res.status(500).json({ success: false, message: 'Внутренняя ошибка сервера при скачивании файла' });
+                    }
+                }
+            });
         } catch (error) {
             console.error('Ошибка загрузки:', error);
             res.status(500).json({
