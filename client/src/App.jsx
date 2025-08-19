@@ -1,5 +1,6 @@
 import './styles/AppStyle.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import HashScroll from './helpers/HashScroll.jsx';
 import MainPage from "./pages/MainPage.jsx";
 import PageContent from "./pages/PageContent/PageContent.jsx";
 import PageNotFound from "./pages/PageNotFound/PageNotFound.jsx";
@@ -14,6 +15,7 @@ import PageLegal from "./pages/PageLegal/PageLegal.jsx"
 function App() {
     return (
         <BrowserRouter>
+            <HashScroll />
             <Routes>
                 <Route path="/" element={<MainPage />} />
                 <Route path="/PageContent" element={<PageContent />} />
