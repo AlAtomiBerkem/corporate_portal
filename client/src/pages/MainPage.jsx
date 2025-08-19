@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import AppHeader from "../components/AppHeader/AppHeader.jsx";
 import AppNavbar from "../components/AppNavbar/AppNavbar.jsx";
 import AppHeroBlock from "../components/AppHeroBlock/AppHeroBlock.jsx";
@@ -12,17 +13,26 @@ import FAQ from "../components/AppFAQ/AppFAQ.jsx";
 import NewsList from "../components/NewsList/NewsList.jsx";
 
 const MainPage = ({}) => {
+    const location = useLocation();
+
     useEffect(() => {
         const usr = window.history.state && window.history.state.usr;
 
-        // Скролл в самый низ: ждём, пока высота страницы стабилизируется (секции/новости догрузятся)
+        const clearNavState = () => {
+            try {
+                const state = window.history.state || {};
+                window.history.replaceState({ ...state, usr: {} }, document.title, location.pathname + location.search);
+            } catch (_) {}
+        };
+
+        // Скролл в самый низ с ожиданием стабилизации высоты
         if (usr?.scrollToBottom) {
             let lastHeight = 0;
             let stableForMs = 0;
             let elapsedMs = 0;
             const intervalMs = 200;
             const maxMs = 6000;
-            const stableNeededMs = 600; // считаем стабильно, если 600мс высота не менялась
+            const stableNeededMs = 600;
 
             const interval = setInterval(() => {
                 elapsedMs += intervalMs;
@@ -30,7 +40,6 @@ const MainPage = ({}) => {
                 if (currentHeight !== lastHeight) {
                     lastHeight = currentHeight;
                     stableForMs = 0;
-                    // Подтягиваемся к низу по мере роста контента
                     window.scrollTo({ top: currentHeight, behavior: 'auto' });
                 } else {
                     stableForMs += intervalMs;
@@ -39,6 +48,7 @@ const MainPage = ({}) => {
                 if (stableForMs >= stableNeededMs || elapsedMs >= maxMs) {
                     window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
                     clearInterval(interval);
+                    clearNavState();
                 }
             }, intervalMs);
 
@@ -52,6 +62,7 @@ const MainPage = ({}) => {
                 const el = document.getElementById(anchorId);
                 if (el) {
                     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    clearNavState();
                     return true;
                 }
                 return false;
@@ -66,12 +77,13 @@ const MainPage = ({}) => {
                 elapsedMs += intervalMs;
                 if (tryScroll() || elapsedMs >= maxMs) {
                     clearInterval(interval);
+                    clearNavState();
                 }
             }, intervalMs);
 
             return () => clearInterval(interval);
         }
-    }, []);
+    }, [location.pathname, location.search]);
 
     return (
         <div>
