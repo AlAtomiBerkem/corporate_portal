@@ -72,7 +72,7 @@ const DocumentsSection = () => {
     const handleDownload = async (fileId, originalName) => {
         try {
             setLoading(true);
-            const downloadUrl = `http://localhost:5000/public/dock/${encodeURIComponent(fileId)}`;
+            const downloadUrl = `/public/dock/${encodeURIComponent(fileId)}`;
             const link = document.createElement('a');
             link.href = downloadUrl;
             link.setAttribute('download', originalName);

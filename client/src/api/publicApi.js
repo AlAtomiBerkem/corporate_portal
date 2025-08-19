@@ -1,5 +1,4 @@
 import {fetchAPI} from './auth.js'
-const baseUrl = 'http://localhost:5000';
 
 export const publicApi = {
     getNews: async () => await fetchAPI('/public/news'),
@@ -7,7 +6,7 @@ export const publicApi = {
     getContent: async () => await fetchAPI('/public/content'),
     getLoadingDocuments: async (fileId) => {
         try {
-            const response = await fetch(`${baseUrl}/public/dock/${fileId}`, {
+            const response = await fetch(`/public/dock/${fileId}`, {
                 method: 'GET',
                 credentials: 'include'
             });

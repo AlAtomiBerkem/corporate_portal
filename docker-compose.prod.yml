@@ -7,6 +7,9 @@ services:
       - '5000:5000'
     env_file:
       - ./server/.env
+    volumes:
+      - server-documents:/usr/src/app/controllers/documents
+      - server-images:/usr/src/app/controllers/images
     depends_on:
       mongo:
         condition: service_healthy
@@ -41,6 +44,10 @@ services:
 
 volumes:
   mongo-data:
+    driver: local
+  server-documents:
+    driver: local
+  server-images:
     driver: local
 
 networks:

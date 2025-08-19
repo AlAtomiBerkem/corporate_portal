@@ -67,7 +67,7 @@ class PublicController {
                 id: file,
                 title: meta[file]?.title || path.basename(file, path.extname(file)),
                 url: `/documents/${file}`,
-                originalName: meta[file]?.originalName || file,
+                originalName: meta[file]?.originalName ? Buffer.from(meta[file].originalName, 'utf8').toString() : file,
                 size: fs.statSync(path.join(DOCUMENTS_DIR, file)).size,
                 uploadedAt: meta[file]?.uploadedAt || new Date().toISOString()
             }));
@@ -100,7 +100,7 @@ class PublicController {
             if (fs.existsSync(META_FILE)) {
                 meta = JSON.parse(fs.readFileSync(META_FILE, 'utf-8'));
             }
-            const originalName = meta[requestedFileName]?.originalName || requestedFileName;
+            const originalName = meta[requestedFileName]?.originalName ? Buffer.from(meta[requestedFileName].originalName, 'utf8').toString() : requestedFileName;
             res.setHeader('Content-Disposition', `attachment; filename="${originalName}"`);
             res.setHeader('Content-Type', 'application/octet-stream');
             const fileStream = fs.createReadStream(filePath);

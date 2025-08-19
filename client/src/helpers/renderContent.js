@@ -16,11 +16,11 @@ export const renderContent = (content, excerptLength = null) => {
                     const entityType = entity.getType();
                     const data = entity.getData();
                     
-                    if (entityType === 'LINK') {
-                        const { url, isDocument } = data;
-                        const linkUrl = url.startsWith('/documents/') 
-                            ? `http://localhost:5000/public/dock/${url.split('/').pop()}` 
-                            : url;
+                                            if (entityType === 'LINK') {
+                            const { url, isDocument } = data;
+                            const linkUrl = url.startsWith('/documents/') 
+                                ? `/public/dock/${url.split('/').pop()}` 
+                                : url;
                         const className = isDocument ? 'draftjs-doc-link' : '';
                         const icon = isDocument ? '<span class="draftjs-doc-link__icon">📄</span>' : '';
                         return {

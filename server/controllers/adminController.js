@@ -36,8 +36,8 @@ class AdminController {
             }
             const file = req.files.document;
             const fileExt = path.extname(file.name);
-            const baseName = path.basename(file.name, fileExt);
-            const uniqueName = `${baseName}_${uuidv4()}${fileExt}`;
+            // Используем только UUID для имени файла, чтобы избежать проблем с длинными кириллическими именами
+            const uniqueName = `${uuidv4()}${fileExt}`;
             const uploadPath = path.join(DOCUMENTS_DIR, uniqueName);
             await file.mv(uploadPath);
             if (!fs.existsSync(uploadPath)) {
@@ -49,7 +49,7 @@ class AdminController {
             }
             meta[uniqueName] = {
                 title: req.body.title,
-                originalName: file.name,
+                originalName: Buffer.from(file.name, 'latin1').toString('utf8'),
                 uploadedAt: new Date().toISOString()
             };
             fs.writeFileSync(META_FILE, JSON.stringify(meta, null, 2));
@@ -327,8 +327,8 @@ class AdminController {
             }
             const file = req.files.image;
             const fileExt = path.extname(file.name);
-            const baseName = path.basename(file.name, fileExt);
-            const uniqueName = `${baseName}_${uuidv4()}${fileExt}`;
+            // Используем только UUID для имени файла изображения
+            const uniqueName = `${uuidv4()}${fileExt}`;
             const uploadPath = path.join(IMAGES_DIR, uniqueName);
             await file.mv(uploadPath);
             if (!fs.existsSync(uploadPath)) {
@@ -339,7 +339,7 @@ class AdminController {
                 meta = JSON.parse(fs.readFileSync(IMAGES_META_FILE, 'utf-8'));
             }
             meta[uniqueName] = {
-                originalName: file.name,
+                originalName: Buffer.from(file.name, 'latin1').toString('utf8'),
                 uploadedAt: new Date().toISOString()
             };
             fs.writeFileSync(IMAGES_META_FILE, JSON.stringify(meta, null, 2));
