@@ -101,7 +101,11 @@ class PublicController {
                 meta = JSON.parse(fs.readFileSync(META_FILE, 'utf-8'));
             }
             const originalName = meta[requestedFileName]?.originalName ? Buffer.from(meta[requestedFileName].originalName, 'utf8').toString() : requestedFileName;
-            res.setHeader('Content-Disposition', `attachment; filename="${originalName}"`);
+            // Формируем максимально безопасный ASCII заголовок без не-ASCII символов,
+            // чтобы исключить ERR_INVALID_CHAR в Node
+            const extension = (path.extname(originalName) || path.extname(requestedFileName) || '').replace(/[^A-Za-z0-9.]/g, '');
+            const safeAsciiName = `document${extension || ''}`; // предсказуемое ASCII-имя
+            res.setHeader('Content-Disposition', `attachment; filename="${safeAsciiName}"`);
             res.setHeader('Content-Type', 'application/octet-stream');
             const fileStream = fs.createReadStream(filePath);
             fileStream.pipe(res);
