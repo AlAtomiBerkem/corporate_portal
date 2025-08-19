@@ -13,7 +13,9 @@ const AppHeader = () => {
                 <div className="container">
                     <div className="header-content">
                         <div className="header-logo-name">
-                            <div className="header-logo"><img src={Logo} alt="logo"/></div>
+                        <Link to="/" className="navigate__link">
+                             <div className="header-logo"><img src={Logo} alt="logo"/></div>
+                        </Link>
                             <h1>Инженерные решения</h1>
                         </div>
                         <div className="header__button">
